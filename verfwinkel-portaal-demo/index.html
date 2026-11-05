@@ -403,7 +403,7 @@ function showHome(){
 let users=[];
 async function showAdmin(){
   $('viewHome').classList.add('hidden');$('viewAdmin').classList.remove('hidden');
-  $('inviteLink').value=location.origin+'/#/aanmelden';
+  $('inviteLink').value=location.href.split('#')[0]+'#/aanmelden';
   const note=$('adminRoleNote');
   if(auth.record.isHost){note.textContent='Maak iemand Beheerder als die ook accounts mag beheren als jij er niet bent. Een beheerder kan jouw account en dat van andere beheerders niet aanpassen.';note.classList.remove('hidden')}
   else{note.textContent='Je bent beheerder: je beheert de accounts van collega’s. Het host-account en andere beheerders kun je niet aanpassen; je eigen toegang regelt de host.';note.classList.remove('hidden')}
