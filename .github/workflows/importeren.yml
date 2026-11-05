@@ -1,0 +1,37 @@
+name: Demo importeren uit Google Drive
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  importeren:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Map downloaden uit Google Drive
+        run: |
+          pip install gdown
+          mkdir -p /tmp/drive && cd /tmp/drive
+          gdown --folder "https://drive.google.com/drive/folders/1eXiCIReq1PxQPEo3YBjqBL8A4_uwyBJu"
+          find /tmp/drive -type f | sort
+      - name: Bestanden in de repo zetten
+        run: |
+          fp=$(find /tmp/drive -path '*functioneringsportaal/index.html' | head -1)
+          test -n "$fp"
+          src=$(dirname "$(dirname "$fp")")
+          rm -rf verfwinkel-portaal-demo
+          cp -r "$src" verfwinkel-portaal-demo
+          find verfwinkel-portaal-demo -type f | sort
+          test -f verfwinkel-portaal-demo/index.html
+          test -f verfwinkel-portaal-demo/demo/mock-api.js
+          test -f verfwinkel-portaal-demo/retouren/index.html
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add verfwinkel-portaal-demo
+          git commit -m "Demo importeren uit Google Drive" || echo "Niets te committen"
+          git push
