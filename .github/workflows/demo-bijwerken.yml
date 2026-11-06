@@ -1,0 +1,36 @@
+name: Demo bijwerken uit Google Drive
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bijwerken:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Map downloaden
+        run: |
+          pip install gdown
+          mkdir -p /tmp/drive && cd /tmp/drive
+          gdown --folder "https://drive.google.com/drive/folders/1dh1GTXtoZBGleOGXsQzw-fyeNM1MsFTL"
+          find /tmp/drive -maxdepth 3 | head -50
+      - name: Oude bestanden weg, demo in hoofdmap
+        run: |
+          fp=$(find /tmp/drive -path '*functioneringsportaal/index.html' | head -1); test -n "$fp"
+          src=$(dirname "$(dirname "$fp")")
+          echo "Bron: $src"
+          git rm -rq --ignore-unmatch verfwinkel-portaal-demo index.html README.md
+          rm -rf verfwinkel-portaal-demo
+          cp -r "$src"/. .
+          test -f index.html && test -f demo/mock-api.js && test -f retouren/index.html
+          if grep -rIil verfwinkel --exclude-dir=.git --exclude-dir=.github . ; then echo "LET OP: verfwinkel gevonden"; fi
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Demo zonder huisstijl (Demo Portaal 3.5)" || echo "Niets te committen"
+          git push
