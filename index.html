@@ -1,4 +1,1026 @@
 <!DOCTYPE html>
-<html lang="nl"><head><meta charset="utf-8"><title>Verfwinkel Portaal – demo</title>
-<meta http-equiv="refresh" content="0; url=verfwinkel-portaal-demo/index.html"></head>
-<body><a href="verfwinkel-portaal-demo/index.html">Naar de demo</a></body></html>
+<html lang="nl">
+<head><script src="demo/mock-api.js"></script><script>(function(){try{if(sessionStorage.getItem('vp_tab_auth')!=='1')return}catch(_){return}
+var P=Storage.prototype,g=P.getItem,s=P.setItem,r=P.removeItem,L=window.localStorage,K='vp_auth';
+P.getItem=function(k){return this===L&&k===K?g.call(sessionStorage,k):g.call(this,k)};
+P.setItem=function(k,v){return this===L&&k===K?s.call(sessionStorage,k,v):s.call(this,k,v)};
+P.removeItem=function(k){return this===L&&k===K?r.call(sessionStorage,k):r.call(this,k)};
+document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.id='vpTestBar';b.setAttribute('role','status');
+b.style.cssText='position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:5000;background:#f59e0b;color:#1f1300;font:700 12px/1.4 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif;padding:5px 14px;border-radius:0 0 10px 10px;box-shadow:0 4px 14px #0002;pointer-events:none;white-space:nowrap';
+b.textContent='Testaccount Johnny Test – alleen dit tabblad';document.body.appendChild(b)})})();</script><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#d60c52"><meta name="apple-mobile-web-app-title" content="Portaal"><meta name="mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Demo Portaal</title>
+<style>
+:root{--accent:#e50071;--accent-dark:#b90059;--pink-soft:#fff0f7;--line:#e8eaf0;--ink:#202635;--sub:#697386;--bg:#f7f8fa;--ok:#17633a;--ok-bg:#dff4e7;--warn:#815000;--warn-bg:#fff0d5;--danger:#9c1934;--danger-bg:#fce2e5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.5}
+a{color:var(--accent-dark)}
+button{font:inherit;border:0;border-radius:8px;padding:11px 16px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+button.secondary{background:#f1f3f6;color:#344052}
+button:disabled{opacity:.55;cursor:default}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #3479d8;outline-offset:2px}
+input{width:100%;padding:12px;border:1px solid #dfe3e9;border-radius:8px;font:inherit;background:#fff}
+label{display:block;font-size:12px;font-weight:700;color:#4d5868;margin:14px 0 6px}
+.hidden{display:none!important}
+.muted{color:var(--sub)}
+/* Auth-schermen */
+.auth{min-height:100vh;display:grid;place-items:center;padding:16px}
+.auth-card{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 10px 40px #1c273312}
+.auth-card .logo{display:block;width:190px;max-width:80%;margin-bottom:22px}
+.auth-card h1{font-size:20px;margin:0 0 6px}
+.auth-card p{margin:0 0 6px;color:var(--sub);font-size:13px}
+.auth-card form button[type=submit]{width:100%;margin-top:18px}
+.auth-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:13px}
+.msg{margin-top:14px;padding:10px 12px;border-radius:8px;font-size:13px}
+.msg:empty{display:none}
+.msg.error{background:var(--danger-bg);color:var(--danger)}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}
+/* App-schil */
+.topbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.topbar .logo{width:170px;display:block}
+.who{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.who strong{display:block;font-size:13px}.who small{display:block;color:var(--sub);font-size:11px}
+.who button{padding:8px 12px;font-size:12px}
+main{max-width:1100px;margin:0 auto;padding:28px 24px 60px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.page-head h1{font-size:23px;margin:0 0 4px}.page-head p{margin:0;color:var(--sub)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.tile{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:var(--ink);min-height:170px;transition:border-color .15s,box-shadow .15s}
+.tile:hover{border-color:#f6cadc;box-shadow:0 6px 20px #1c27330d}
+.tile .icon{width:44px;height:44px;border-radius:11px;background:var(--pink-soft);color:var(--accent);display:grid;place-items:center;font-size:22px}
+.tile h2{font-size:16px;margin:0}.tile p{margin:0;color:var(--sub);font-size:13px;flex:1}
+.tile-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.back-link{font-size:13px;font-weight:700;color:var(--brand-dark,#b90059);text-decoration:none;align-self:center}.back-link:hover{text-decoration:underline}
+.badge.test{background:#fff0d5;color:#815000}
+.tile-version{font-size:11px;color:var(--sub);font-weight:600}
+.version-foot{margin:30px 0 0;font-size:12px;color:var(--sub);text-align:center}
+.badge{align-self:flex-start;font-size:11px;font-weight:700;border-radius:20px;padding:4px 9px}
+.badge.edit{background:var(--ok-bg);color:var(--ok)}.badge.view{background:var(--warn-bg);color:var(--warn)}.badge.host{background:var(--pink-soft);color:var(--accent-dark)}
+.empty{background:#fff;border:1px dashed #d8dce4;border-radius:14px;padding:34px;text-align:center;color:var(--sub)}
+/* Startpagina met widgets (S = 1 vak, M = 2 breed, L = 2×2). Volgorde, grootte en licht/donker per persoon. */
+.home-tools{display:flex;gap:8px;align-self:center}
+.pill{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px}
+.pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.wg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:148px;grid-auto-flow:dense;gap:16px}
+.w{position:relative;display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-decoration:none;color:var(--ink);overflow:hidden;box-shadow:0 1px 3px #1c273309;transition:box-shadow .15s,border-color .15s;min-width:0}
+.w:hover{border-color:#f6cadc;box-shadow:0 8px 24px #1c27330f}
+.w.M{grid-column:span 2}.w.L{grid-column:span 2;grid-row:span 2}
+.w-top{display:flex;align-items:center;gap:10px}
+.w-ic{width:36px;height:36px;border-radius:11px;background:var(--pink-soft);color:var(--accent);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.w-name{font-weight:800;font-size:14.5px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w-sub{font-size:12px;color:var(--sub)}
+.w-big{font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.05}
+.w-big small{font-size:13px;font-weight:700;letter-spacing:0;color:var(--sub);margin-left:4px}
+.w-body{margin-top:auto;display:flex;flex-direction:column;gap:6px;min-height:0}
+.w-cols{display:flex;gap:22px}.w-cols>div{min-width:0}
+.w-list{display:flex;flex-direction:column;gap:5px;font-size:12.5px}.w-list div{display:flex;justify-content:space-between;gap:10px}.w-list span{color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.w-list b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w-bars{display:flex;gap:5px;align-items:flex-end;height:64px}.w-bars i{flex:1;border-radius:5px;background:var(--accent);opacity:.28;min-height:3px}.w-bars i.nu{opacity:.9}
+.w-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#1e8a1c;margin-right:6px}.w-dot.bad{background:#c10a4a}
+.w-ctl{display:none}
+.wg.edit .w{cursor:grab;touch-action:none;animation:wob .28s infinite alternate ease-in-out}
+.wg.edit .w:nth-child(2n){animation-delay:.14s}
+@keyframes wob{from{transform:rotate(-.5deg)}to{transform:rotate(.5deg)}}
+.wg.edit .w.drag{animation:none;z-index:5;box-shadow:0 18px 40px #1c273333;cursor:grabbing;opacity:.95}
+.wg.edit .w-ctl{display:flex;position:absolute;inset:auto 10px 10px auto;gap:4px;z-index:2}
+.w-ctl button{padding:0;width:28px;height:24px;border-radius:7px;font-size:11px;font-weight:800;background:#ffffffe6;color:var(--ink);border:1px solid #0000001a}
+.w-ctl button.on{background:var(--ink);color:#fff}
+.w-del{display:none;position:absolute;top:8px;left:8px;width:24px;height:24px;border-radius:50%;padding:0;background:#20263599;color:#fff;font-size:16px;line-height:1;z-index:2}
+.wg.edit .w-del{display:block}
+.wg-hidden{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--sub)}
+.wg-hidden button{background:#fff;color:var(--ink);border:1px dashed #c9ced8;border-radius:20px;padding:7px 12px;font-size:12.5px}
+@media(max-width:720px){.topbar{padding:12px 16px}.topbar .logo{width:130px}.who small{display:none}.who button{padding:7px 10px;font-size:11.5px}.who{gap:8px}main{padding:20px 16px 50px}.wg{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:136px;gap:12px}.w{border-radius:20px;padding:14px}.w-big{font-size:26px}.w-cols{gap:14px}}
+/* donker (per persoon) */
+body.donker{--bg:#161a24;--line:#2a3142;--ink:#eef1f6;--sub:#9aa3b5;--pink-soft:#3a1f2e}
+body.donker .topbar{background:#1d2230;border-color:#2a3142}body.donker .topbar .logo{filter:brightness(0) invert(1)}
+body.donker .w{background:#1f2433;box-shadow:none}body.donker .w:hover{border-color:#4a3142}
+body.donker .pill,body.donker button.secondary{background:#1f2433;color:var(--ink);border:1px solid var(--line)}
+body.donker .w-ctl button{background:#2a3142;color:#fff;border-color:#3a4256}body.donker .w-ctl button.on{background:#fff;color:#161a24}
+body.donker .wg-hidden button{background:#1f2433;color:var(--ink)}
+body.donker .tile,body.donker .empty{background:#1f2433;color:var(--ink)}
+/* Beheer */
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
+.panel h2{font-size:16px;margin:0 0 6px}
+.invite{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.invite input{flex:1;min-width:220px;background:#f8f9fb}
+.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input{max-width:320px}
+/* Accounts & toegang: lijst + detail */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.acc{display:grid;grid-template-columns:330px minmax(0,1fr);gap:16px;align-items:start;margin-bottom:18px}
+.acc .panel{padding:0;margin:0;overflow:hidden}
+.acc-search{padding:12px;border-bottom:1px solid var(--line)}.acc-search input{padding:9px 12px}
+.acc-rows{max-height:620px;overflow:auto}
+.acc-row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;color:var(--ink);border-radius:0;padding:11px 14px;border-bottom:1px solid #f0f1f5;font-weight:400}
+.acc-row:hover{background:#fafbfc}.acc-row[aria-selected="true"]{background:var(--pink-soft)}
+.acc-row b{display:block;font-size:13.5px}.acc-row small{display:block;color:var(--sub);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-row .txt{min-width:0;flex:1}
+.av{width:36px;height:36px;border-radius:50%;background:var(--pink-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;flex-shrink:0;font-size:14px}
+.av.big{width:48px;height:48px;font-size:18px}
+.dotx{width:8px;height:8px;border-radius:50%;flex-shrink:0}.dotx.lock{background:#c10a4a}.dotx.wait{background:#e08a00}
+.acc-detail{padding:22px 24px!important}
+.ad-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.ad-head h2{margin:0;font-size:19px}.ad-head .sub{color:var(--sub);font-size:12.5px}
+.ad-app{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:start;padding:14px 0;border-bottom:1px solid #f0f1f5}
+.ad-app>b{padding-top:7px;font-size:13.5px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.seg button{background:#fff;color:#4a5362;border-radius:0;border-right:1px solid var(--line);padding:7px 12px;font-size:12.5px;font-weight:700}
+.seg button:last-child{border-right:0}.seg button.on{background:var(--pink-soft);color:#c50060}
+.seg button:disabled{opacity:.5}
+.ad-app .rol-box{flex-direction:row;flex-wrap:wrap;gap:6px 16px;margin-top:10px}
+.ad-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:16px}
+.ad-acts .act-btn{margin:0}
+.uitleg{margin:0 0 18px;font-size:13px;color:var(--sub)}.uitleg summary{cursor:pointer;font-weight:700}
+@media(max-width:860px){.acc{grid-template-columns:minmax(0,1fr)}.acc-rows{max-height:320px}.ad-app{grid-template-columns:minmax(0,1fr)}.ad-app>b{padding-top:0}}
+.users{width:100%;border-collapse:collapse}
+.users th{text-align:left;font-size:11px;color:var(--sub);font-weight:700;padding:10px 12px;background:#f8f9fb;border-bottom:1px solid var(--line)}
+.users td{padding:14px 12px;border-bottom:1px solid #eff0f3;vertical-align:middle}
+.admin-who{margin-top:4px;font-weight:600;color:var(--sub);overflow-wrap:anywhere}
+.state.admin{background:var(--pink-soft);color:var(--accent-dark)}
+.role-select{display:block;margin-top:8px;min-width:0;width:auto;font-size:12px;padding:5px 26px 5px 8px}
+.role-select[data-role="admin"]{border-color:#f3bcd8;background:var(--pink-soft);color:var(--accent-dark)}
+.fixed-level{display:inline-block;color:var(--sub);font-size:12px;font-weight:600}
+.admin-note{background:var(--pink-soft);color:var(--accent-dark);border-radius:10px;padding:10px 14px;font-size:13px;margin:0 0 4px}
+.users td.person strong{display:block}.users td.person small{color:var(--sub);overflow-wrap:anywhere}
+.state{font-size:11px;font-weight:700;border-radius:20px;padding:3px 8px;display:inline-block;margin-top:4px}
+.state.ok{background:var(--ok-bg);color:var(--ok)}.state.locked{background:var(--danger-bg);color:var(--danger)}
+.act-btn{background:#fff;color:var(--ink);border:1px solid var(--line);padding:7px 10px;font-size:12px;margin:0 6px 6px 0}.act-btn.warn{border-color:#ecd0d7;color:var(--danger);font-weight:800}.state.wait{background:var(--warn-bg);color:var(--warn)}
+.lvl-select{font:inherit;font-size:13px;font-weight:650;border:1px solid var(--line);border-radius:8px;padding:7px 28px 7px 10px;background:#fff;color:var(--ink);cursor:pointer;min-width:150px;max-width:100%}
+.lvl-select[data-level="edit"]{border-color:#bfe3c4;background:var(--ok-bg);color:var(--ok)}
+.lvl-select[data-level="view"]{border-color:#efd9a8;background:var(--warn-bg);color:var(--warn)}
+.lvl-select[data-level=""]{color:var(--sub)}
+.test-apps .rol-box{margin:-4px 0 4px auto;width:170px;gap:2px}.test-apps .rol-box label{display:flex;align-items:center;gap:6px;font-weight:600}
+.rol-box{display:flex;flex-direction:column;gap:4px;margin-top:6px;font-size:12.5px;font-weight:600}.rol-box[hidden]{display:none}.rol-box input{width:auto;margin:0 4px 0 0}
+.lvl-select[data-level="rol"]{border-color:#c9d6f2;background:#eef3fd;color:#24508f}
+.lvl-select[data-level="edit2"]{border-color:#f3bcd8;background:var(--pink-soft);color:var(--accent-dark)}
+.fixed-level.visitor{color:var(--accent-dark)}
+.lvl-select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lvl-select:disabled{opacity:.6}
+main:has(#viewAdmin:not(.hidden)){max-width:1440px}
+.users td.acts{white-space:nowrap}
+.icon-btn{background:#fff;color:var(--danger);border:1px solid #ecd0d7;padding:7px 10px;font-size:12px}
+.tablewrap{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#202635;color:#fff;padding:10px 16px;border-radius:9px;font-size:13px;box-shadow:0 8px 30px #0003;z-index:50}
+.toast.error{background:var(--danger)}
+dialog{width:min(440px,calc(100vw - 28px));border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 20px 80px #17223129}
+dialog::backdrop{background:rgba(25,33,48,.43)}
+dialog p{margin:0 0 18px;line-height:1.6}
+.dialog-actions{display:flex;justify-content:flex-end;gap:10px}
+.test-panel{border:1px dashed #f0b45c;background:#fffaf1}.test-panel h2{display:flex;align-items:center;gap:8px}.test-panel h2 .tag{font-size:11px;font-weight:800;letter-spacing:.04em;background:#f59e0b;color:#1f1300;border-radius:20px;padding:3px 9px}
+.test-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.test-row p{margin:0}
+#testDialog{width:min(480px,calc(100vw - 28px))}#testDialog h2{margin:0 0 6px;font-size:18px}#testDialog .muted{margin:0 0 16px}
+.test-apps{display:flex;flex-direction:column;gap:10px;margin:0 0 20px}.test-apps label{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:10px;align-items:center;font-weight:650}
+@media(max-width:520px){.test-apps label{grid-template-columns:minmax(0,1fr)}}
+.invite-info{background:var(--pink-soft);color:var(--accent-dark);border-radius:10px;padding:12px 14px;font-size:13px;margin:12px 0 4px}.invite-info strong{display:block;margin-bottom:2px}
+.last-login{display:block;font-size:11px;color:var(--sub);margin-top:4px}.last-login.never{color:var(--warn)}
+.inv-list{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.inv-list li{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.inv-list li.used{background:#f8f9fb}.inv-list .inv-main{min-width:0}.inv-list .inv-main strong{display:block}.inv-list small{color:var(--sub);display:block;overflow-wrap:anywhere}
+.inv-acts{display:flex;gap:6px;flex-wrap:wrap}
+#inviteDialog{width:min(520px,calc(100vw - 28px))}#inviteDialog h2,#pwDialog h2{margin:0 0 6px;font-size:18px}#inviteDialog .muted{margin:0 0 10px}
+.inv-result{margin:0 0 16px}.inv-result input{background:#f8f9fb}
+.log-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.log-tools select,.log-tools input{width:auto;padding:8px 10px;font:inherit;border:1px solid var(--line);border-radius:8px}.log-tools input{min-width:220px}
+.log{width:100%;border-collapse:collapse;font-size:13px}.log td{padding:9px 10px;border-bottom:1px solid #eff0f3;vertical-align:top}.log td.t{white-space:nowrap;color:var(--sub);width:1%}
+.log .soort{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 8px;background:#f1f3f6;color:#4a5362;white-space:nowrap}
+.log .soort.inloggen{background:#e8f0fd;color:#24508f}.log .soort.toegang{background:var(--ok-bg);color:var(--ok)}.log .soort.account{background:var(--warn-bg);color:var(--warn)}.log .soort.uitnodiging{background:var(--pink-soft);color:var(--accent-dark)}.log .soort.retour{background:var(--danger-bg);color:var(--danger)}
+.log small{display:block;color:var(--sub)}.log-more{margin-top:12px}
+@media(max-width:700px){
+  .topbar{padding:12px 16px}.topbar .logo{width:140px}main{padding:20px 16px 50px}
+  .users thead{display:none}.users,.users tbody,.users tr,.users td{display:block;width:100%}
+  .users tr{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;padding:6px 4px}
+  .users td{border:0;padding:8px 10px}
+  .users td[data-label]::before{content:attr(data-label);display:block;font-size:11px;font-weight:700;color:var(--sub);margin-bottom:5px}
+    .lvl-select{width:100%}.users td.acts{white-space:normal}
+}
+
+/* ===== Nieuwe stijl (portaal 3.4): roze kop, kaarten, licht en donker ===== */
+@font-face{font-family:'Inter';src:url(fonts/inter.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Bricolage';src:url(fonts/bricolage-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Bricolage';src:url(fonts/bricolage-800.woff2) format('woff2');font-weight:800;font-display:swap}
+body{--band:#e50071;--band2:#b90059;--card:#fff;--shadow:0 1px 0 #e8eaf0,0 18px 40px -30px rgba(32,38,53,.5);--glass:rgba(255,255,255,.16);--glass-h:rgba(255,255,255,.26);--barsoft:#f7c6dd;--pad:max(24px,calc((100% - 1248px) / 2 + 24px))}
+body.donker{--band:#6b0036;--band2:#4a0026;--bg:#12141c;--card:#1b1e2a;--line:#2b2f3f;--ink:#eef0f5;--sub:#a2a9ba;--pink-soft:rgba(229,0,113,.16);--accent-dark:#ff7ab8;--shadow:0 1px 0 #2b2f3f,0 18px 40px -30px rgba(0,0,0,.8);--glass:rgba(255,255,255,.1);--glass-h:rgba(255,255,255,.18);--barsoft:#5a2a44;
+  --ok:#7ee2a8;--ok-bg:rgba(46,160,90,.18);--warn:#ffcf7a;--warn-bg:rgba(255,180,60,.15);--danger:#ff8b9b;--danger-bg:rgba(255,80,100,.16);color-scheme:dark}
+#shell .topbar{position:relative;overflow:hidden;background:var(--band);border:0;padding:16px var(--pad) 230px;color:#fff}
+#shell .topbar::after{content:'';position:absolute;right:-140px;top:-240px;width:600px;height:600px;border-radius:50%;background:var(--band2);opacity:.45;pointer-events:none}
+#shell .topbar>*{position:relative;z-index:1}
+#shell .topbar .logo{width:160px;filter:none!important}
+#shell .topbar a:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:6px}
+#shell .who strong{color:#fff}#shell .who small{color:#ffd6e8}
+#shell .who button,#shell .home-tools .pill,#shell .home-tools a.pill{background:var(--glass)!important;color:#fff!important;border:0!important;border-radius:999px;height:36px;padding:0 15px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+#shell .who button:hover,#shell .home-tools .pill:hover{background:var(--glass-h)!important}
+#shell .who button:focus-visible,#shell .home-tools .pill:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#shell .home-tools .pill.on{background:#fff!important;color:#b90059!important}
+#shell>main{position:relative;z-index:2;max-width:1248px;margin:-210px auto 0}
+main:has(#viewAdmin:not(.hidden)){max-width:1248px!important}
+.page-head{color:#fff;min-height:96px;align-items:flex-end;margin-bottom:26px}
+.page-head h1{font:800 56px/1.02 Bricolage,Inter,sans-serif!important;letter-spacing:-.04em;color:#fff;margin:0!important}
+.page-head p{color:#ffe7f2!important}
+.page-head .admin-who{color:#ffd6e8!important}
+.home-date{font-weight:600;font-size:15px;margin:0 0 8px!important}
+.back-link{color:#fff!important;background:var(--glass);border-radius:999px;padding:8px 14px}
+.home-alert{display:flex;align-items:center;gap:14px;background:#fff;color:#202635;border-radius:14px;padding:11px 11px 11px 16px;text-decoration:none;box-shadow:0 12px 30px -16px rgba(80,0,40,.5);align-self:center}
+.home-alert b{display:block;font-size:14px}.home-alert small{display:block;font-size:12.5px;color:#697386}
+.home-alert .dotr{width:10px;height:10px;border-radius:50%;background:#e50071;box-shadow:0 0 0 4px rgba(229,0,113,.18);flex:none}
+.home-alert .go{background:#e50071;color:#fff;border-radius:10px;padding:8px 14px;font-weight:650;font-size:13px}
+.home-alert:hover .go{background:#b90059}.home-alert:focus-visible{outline:2px solid #fff;outline-offset:3px}
+body.donker .home-alert{background:var(--card);color:var(--ink)}body.donker .home-alert small{color:var(--sub)}
+.home-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;margin-left:auto}.home-right:not(:has(>:not(.hidden))){display:none}#labsBack{margin-left:auto;align-self:flex-end}.page-head>.home-tools{margin-left:auto}.page-head{justify-content:flex-start}
+/* widgets als kaarten */
+.wg{gap:18px;grid-auto-rows:156px}
+.w{border:0!important;border-radius:20px;padding:20px 22px;box-shadow:var(--shadow);background:var(--card)}
+.w:hover{box-shadow:0 1px 0 var(--line),0 22px 44px -26px rgba(32,38,53,.55)}
+.w:focus-visible{outline:3px solid #e50071;outline-offset:3px}
+.w-ic{width:40px;height:40px;border-radius:12px;font-size:18px}
+.w-name{font:700 19px/1.15 Bricolage,Inter,sans-serif;letter-spacing:-.02em}
+.w-big{font-family:Bricolage,Inter,sans-serif;font-size:34px;letter-spacing:-.03em}
+.w.L[data-id="retouren"] .w-big:first-child{font-size:84px;line-height:.9;color:var(--accent)}
+body.donker .w.L[data-id="retouren"] .w-big:first-child{color:#ff7ab8}
+.w-bars{height:84px;gap:8px}.w-bars i{opacity:1;background:var(--barsoft);border-radius:6px 6px 0 0}.w-bars i.nu{opacity:1;background:var(--accent)}
+.w-list div{padding:3px 0}
+.w-go{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer;border-radius:6px}
+.w-go:last-child{border-bottom:0}.w-go b{font-weight:650;color:var(--ink)}.w-go small{color:var(--sub);font-size:12px;margin-left:auto}
+.w-go .ar{color:var(--sub)}.w-go:hover b{color:var(--accent-dark)}.w-go:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.version-foot{color:var(--sub)}
+/* tegels (Labs) en panelen */
+.tile,.panel,.empty{border:0!important;border-radius:20px!important;box-shadow:var(--shadow);background:var(--card)!important}
+.tile h2{font:700 21px Bricolage,Inter,sans-serif;letter-spacing:-.02em}
+.tile .icon{width:44px;height:44px;border-radius:12px}
+.panel h2{font:700 18px Bricolage,Inter,sans-serif;letter-spacing:-.01em}
+/* Accounts & toegang: geen profielrondjes */
+.acc-row .av,.ad-head .av{display:none!important}
+.acc-row{padding:13px 16px}
+/* donker: vaste plekken in Accounts & toegang en dialogen */
+body.donker input,body.donker select,body.donker textarea,body.donker .lvl-select{background:#242838;color:var(--ink);border-color:var(--line)}
+body.donker .acc-row,body.donker .seg,body.donker .seg button,body.donker .act-btn,body.donker .icon-btn,body.donker .wg-hidden button{background:var(--card);color:var(--ink);border-color:var(--line)}
+body.donker .acc-row:hover{background:#242838}body.donker .acc-row[aria-selected="true"],body.donker .seg button.on{background:var(--pink-soft);color:#ff7ab8}
+body.donker .users th,body.donker .inv-list li.used,body.donker .inv-result input,body.donker .invite input{background:#242838}
+body.donker .users td,body.donker .log td,body.donker .ad-app,body.donker .acc-row{border-color:var(--line)}
+body.donker .log .soort{background:#2b2f3f;color:var(--ink)}body.donker .log .soort.inloggen,body.donker .lvl-select[data-level="rol"]{background:rgba(80,140,255,.15);color:#9cc3ff;border-color:transparent}
+body.donker .test-panel{background:rgba(255,180,60,.08)!important;border:1px dashed #6b5320!important}
+body.donker dialog{background:var(--card);color:var(--ink);border-color:var(--line)}
+body.donker .admin-note,body.donker .invite-info{background:var(--pink-soft);color:#ffb3d4}
+body.donker .acc-search{border-color:var(--line)}body.donker .uitleg{color:var(--sub)}
+body.donker a{color:#ff7ab8}body.donker a.w,body.donker a.tile{color:var(--ink)}body.donker .page-head a.pill,body.donker .back-link{color:#fff}
+body.donker button.secondary{background:#242838;color:var(--ink)}
+@media(max-width:720px){
+  #shell .topbar{padding:12px 16px 200px}#shell .topbar .logo{width:124px}
+  #shell>main{margin-top:-184px}
+  .page-head{min-height:0}.page-head h1{font-size:36px!important}
+  .home-right{align-items:stretch;width:100%}.home-alert{width:100%}
+  .wg{grid-auto-rows:140px}.w.L[data-id="retouren"] .w-big:first-child{font-size:56px}
+}
+</style>
+</head>
+<body>
+
+<!-- Inloggen -->
+<section class="auth hidden" id="viewLogin" aria-labelledby="loginTitle">
+  <div class="auth-card">
+    <img class="logo" src="logo.png" alt="Demo Portaal">
+    <h1 id="loginTitle">Inloggen</h1>
+    <p>Log in met je werkmail en je eigen wachtwoord.</p>
+    <form id="loginForm" novalidate>
+      <label for="loginEmail">Werkmail</label>
+      <input id="loginEmail" type="email" autocomplete="username" placeholder="naam@voorbeeld.nl" required>
+      <label for="loginPassword">Wachtwoord</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+      <button type="submit">Inloggen</button>
+      <div class="msg" id="loginMsg" role="alert"></div>
+    </form>
+    <form id="otpForm" novalidate hidden>
+      <p id="otpInfo">We hebben een inlogcode naar je mail gestuurd. Vul die hieronder in.</p>
+      <label for="otpCode">Inlogcode</label>
+      <input id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" required>
+      <button type="submit">Inloggen</button>
+      <button type="button" class="secondary" id="otpResend" style="margin-top:8px">Nieuwe code sturen</button>
+      <div class="msg" id="otpMsg" role="alert"></div>
+    </form>
+    <div class="auth-links"><a href="#/aanmelden">Account aanmaken</a><a href="#/wachtwoord-vergeten">Wachtwoord vergeten?</a></div>
+  </div>
+</section>
+
+<!-- Aanmelden -->
+<section class="auth hidden" id="viewRegister" aria-labelledby="registerTitle">
+  <div class="auth-card">
+    <img class="logo" src="logo.png" alt="Demo Portaal">
+    <h1 id="registerTitle">Account aanmaken</h1>
+    <p>Gebruik je werkmail. Je krijgt een mail om je account te bevestigen.</p>
+    <div class="invite-info hidden" id="regInvite" role="status"></div>
+    <form id="registerForm" novalidate>
+      <label for="regName">Naam</label>
+      <input id="regName" autocomplete="name" required>
+      <label for="regEmail">Werkmail</label>
+      <input id="regEmail" type="email" autocomplete="email" placeholder="naam@voorbeeld.nl" required>
+      <label for="regPassword">Kies een wachtwoord (minimaal 10 tekens)</label>
+      <input id="regPassword" type="password" autocomplete="new-password" minlength="10" required>
+      <label for="regPassword2">Herhaal je wachtwoord</label>
+      <input id="regPassword2" type="password" autocomplete="new-password" required>
+      <button type="submit">Account aanmaken</button>
+      <div class="msg" id="registerMsg" role="alert"></div>
+    </form>
+    <div class="auth-links"><a href="#/login">Ik heb al een account</a></div>
+  </div>
+</section>
+
+<!-- Bevestigen -->
+<section class="auth hidden" id="viewConfirm" aria-labelledby="confirmTitle">
+  <div class="auth-card">
+    <img class="logo" src="logo.png" alt="Demo Portaal">
+    <h1 id="confirmTitle">Account bevestigen</h1>
+    <div class="msg" id="confirmMsg" role="status"></div>
+    <div class="auth-links"><a href="#/login">Naar inloggen</a></div>
+  </div>
+</section>
+
+<!-- Wachtwoord vergeten -->
+<section class="auth hidden" id="viewForgot" aria-labelledby="forgotTitle">
+  <div class="auth-card">
+    <img class="logo" src="logo.png" alt="Demo Portaal">
+    <h1 id="forgotTitle">Wachtwoord vergeten</h1>
+    <p>Vul je werkmail in. Je krijgt een mail met een link om een nieuw wachtwoord te kiezen.</p>
+    <form id="forgotForm" novalidate>
+      <label for="forgotEmail">Werkmail</label>
+      <input id="forgotEmail" type="email" autocomplete="email" required>
+      <button type="submit">Stuur de mail</button>
+      <div class="msg" id="forgotMsg" role="alert"></div>
+    </form>
+    <div class="auth-links"><a href="#/login">Terug naar inloggen</a></div>
+  </div>
+</section>
+
+<!-- Nieuw wachtwoord -->
+<section class="auth hidden" id="viewReset" aria-labelledby="resetTitle">
+  <div class="auth-card">
+    <img class="logo" src="logo.png" alt="Demo Portaal">
+    <h1 id="resetTitle">Nieuw wachtwoord kiezen</h1>
+    <form id="resetForm" novalidate>
+      <label for="resetPassword">Nieuw wachtwoord (minimaal 10 tekens)</label>
+      <input id="resetPassword" type="password" autocomplete="new-password" required>
+      <label for="resetPassword2">Herhaal je wachtwoord</label>
+      <input id="resetPassword2" type="password" autocomplete="new-password" required>
+      <button type="submit">Wachtwoord opslaan</button>
+      <div class="msg" id="resetMsg" role="alert"></div>
+    </form>
+    <div class="auth-links"><a href="#/login">Naar inloggen</a></div>
+  </div>
+</section>
+
+<!-- Ingelogd -->
+<div class="hidden" id="shell">
+  <header class="topbar">
+    <a href="#/"><img class="logo" src="logo-wit.png" alt="Demo Portaal – naar het portaal"></a>
+    <div class="who"><div><strong id="whoName"></strong><small id="whoEmail"></small></div><button class="secondary" id="pwBtn" type="button">Wachtwoord wijzigen</button><button class="secondary" id="logoutBtn" type="button">Uitloggen</button></div>
+  </header>
+  <main>
+    <section id="viewHome" class="hidden" aria-labelledby="homeTitle">
+      <div class="page-head"><div><p class="home-date" id="homeDate"></p><h1 id="homeTitle">Welkom</h1><p id="homeSub">Kies een app om verder te gaan.</p></div><a class="back-link hidden" id="labsBack" href="#/">← Terug naar alle apps</a><div class="home-right"><div class="home-tools hidden" id="homeTools"><button type="button" class="pill" id="themaBtn">☾ Donker</button><button type="button" class="pill" id="editBtn">Bewerken</button></div></div></div>
+      <div class="tiles" id="tiles"></div><div class="wg hidden" id="wgrid" aria-label="Je apps"></div><div class="wg-hidden hidden" id="wHidden"></div>
+      <div class="empty hidden" id="noApps"><strong>Je hebt nog geen toegang tot apps.</strong><br>Je account is aangemaakt. Vraag je beheerder om je toegang te geven; daarna verschijnen de apps hier.</div>
+      <p class="version-foot" id="versionFoot"></p>
+    </section>
+
+    <section id="viewAdmin" class="hidden" aria-labelledby="adminTitle">
+      <div class="page-head"><div><h1 id="adminTitle">Accounts & toegang</h1><p>Bepaal per persoon wat iemand in elke app mag.</p><p id="adminWho" class="admin-who"></p></div><div class="home-tools"><button type="button" class="pill" id="inviteNew2">＋ Uitnodigen</button><a href="#/" class="pill" style="text-decoration:none">← Apps</a></div></div>
+      <div class="acc" aria-labelledby="usersTitle">
+        <div class="acc-list panel"><div class="acc-search"><h2 id="usersTitle" class="sr">Accounts</h2><input id="userSearch" type="search" placeholder="Zoek collega…" aria-label="Zoek accounts"></div><div id="usersBody" class="acc-rows"></div>
+          <p class="muted hidden" id="usersEmpty" style="padding:14px 16px">Nog geen andere accounts. Nodig je collega's uit.</p></div>
+        <div class="acc-detail panel" id="userDetail"><p class="muted">Kies links een collega.</p></div>
+      </div>
+      <details class="uitleg"><summary>Uitleg over de rollen</summary><p id="adminRoleNote" class="admin-note hidden"></p></details>
+      <div class="panel">
+        <div class="toolbar"><h2>Uitnodigen</h2><button id="inviteNew" type="button">＋ Uitnodiging met toegang</button></div>
+        <p class="muted">Maak per collega een uitnodiging en kies meteen tot welke apps diegene toegang krijgt. De link is 14 dagen geldig en werkt één keer. Na het aanmelden en bevestigen kan diegene direct aan de slag.</p>
+        <ul class="inv-list" id="invList"></ul>
+        <details style="margin-top:14px"><summary class="muted" style="cursor:pointer">Algemene link zonder toegang</summary>
+        <p class="muted" style="margin:8px 0 0">Met deze link maakt iemand een account aan zonder toegang; die zet je daarna hieronder aan.</p>
+        <div class="invite"><input id="inviteLink" readonly aria-label="Uitnodigingslink"><button id="copyInvite" type="button" class="secondary">Kopieer link</button></div></details>
+      </div>
+      <div class="panel test-panel hidden" id="testPanel">
+        <h2>Testaccount <span class="tag">ALLEEN JIJ</span></h2>
+        <div class="test-row"><p class="muted">Bekijk het portaal als <strong>Johnny Test</strong>, een gewone collega. Je kiest per app de toegang; het opent in een nieuw tabblad en jij blijft hier host. Niemand anders ziet dit, ook beheerders niet.</p><button id="testOpen" type="button">Testaccount openen</button></div>
+      </div>
+      <div class="panel hidden" id="logPanel">
+        <div class="toolbar"><h2>Logboek <span class="muted" style="font-size:12px;font-weight:600">· alleen jij</span></h2>
+          <div class="log-tools"><select id="logSoort" aria-label="Soort"><option value="">Alles</option><option value="inloggen">Inloggen</option><option value="toegang">Toegang</option><option value="account">Accounts</option><option value="uitnodiging">Uitnodigingen</option><option value="retour">Retouren</option></select><input id="logZoek" type="search" placeholder="Zoek op naam of actie" aria-label="Zoek in logboek"></div></div>
+        <div class="tablewrap"><table class="log"><tbody id="logBody"></tbody></table></div>
+        <p class="muted hidden" id="logEmpty">Nog niets gelogd.</p>
+        <button class="secondary log-more hidden" id="logMore" type="button">Meer laden</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="testDialog" aria-labelledby="testDialogTitle"><form method="dialog" id="testForm"><h2 id="testDialogTitle">Testaccount Johnny Test</h2><p class="muted">Welke toegang krijgt Johnny per app? Na Openen zie je in een nieuw tabblad precies wat een collega met deze rechten ziet.</p><div class="test-apps" id="testApps"></div><div class="dialog-actions"><button class="secondary" type="button" id="testCancel">Annuleren</button><button type="submit" id="testGo">Openen in nieuw tabblad</button></div></form></dialog>
+<dialog id="inviteDialog" aria-labelledby="inviteDialogTitle"><form method="dialog" id="inviteForm"><h2 id="inviteDialogTitle">Uitnodiging met toegang</h2><p class="muted">Naam en werkmail zijn optioneel. Vul je een werkmail in, dan werkt de link alleen voor dat adres.</p>
+<div id="inviteFields"><label for="invNaam">Naam (optioneel)</label><input id="invNaam" autocomplete="off" placeholder="Bijv. Piet (magazijn)"><label for="invEmail">Werkmail (optioneel)</label><input id="invEmail" type="email" autocomplete="off" placeholder="naam@voorbeeld.nl"><label style="margin-top:16px">Toegang na aanmelden</label><div class="test-apps" id="invApps"></div></div>
+<div class="inv-result hidden" id="invResult"><div class="msg ok" id="invResultMsg"></div><div class="invite"><input id="invResultLink" readonly aria-label="Uitnodigingslink"><button type="button" id="invResultCopy">Kopieer link</button></div></div>
+<div class="msg" id="inviteMsg" role="alert"></div><div class="dialog-actions" style="margin-top:16px"><button class="secondary" type="button" id="inviteCancel">Sluiten</button><button type="submit" id="inviteSubmit">Uitnodiging maken</button></div></form></dialog>
+<dialog id="pwDialog" aria-labelledby="pwDialogTitle"><form method="dialog" id="pwForm" novalidate><h2 id="pwDialogTitle">Wachtwoord wijzigen</h2><p class="muted" style="margin:0">Na het wijzigen word je op andere apparaten uitgelogd.</p>
+<input type="text" autocomplete="username" id="pwUser" hidden><label for="pwOld">Huidig wachtwoord</label><input id="pwOld" type="password" autocomplete="current-password" required><label for="pwNew">Nieuw wachtwoord (minimaal 10 tekens)</label><input id="pwNew" type="password" autocomplete="new-password" minlength="10" required><label for="pwNew2">Herhaal nieuw wachtwoord</label><input id="pwNew2" type="password" autocomplete="new-password" required>
+<div class="msg" id="pwMsg" role="alert"></div><div class="dialog-actions" style="margin-top:18px"><button class="secondary" type="button" id="pwCancel">Annuleren</button><button type="submit" id="pwSubmit">Opslaan</button></div></form></dialog>
+<dialog id="confirmDialog" aria-labelledby="confirmDialogText"><p id="confirmDialogText"></p><div class="dialog-actions"><button class="secondary" id="confirmNo" type="button">Annuleren</button><button id="confirmYes" type="button">Verwijderen</button></div></dialog>
+
+<script>
+(function(){
+'use strict';
+/* Apps in het portaal. Nieuwe app = één regel erbij + een veld <id>_access in PocketBase. */
+const APPS=[
+  {key:'fp_access',id:'functioneringsportaal',name:'Functioneringsgesprekken',desc:'Gesprekken, planning en verslagen van functioneringsgesprekken.',url:'functioneringsportaal/index.html',icon:'▤'},
+  {key:'rt_access',id:'retouren',name:'Retouren',desc:'Overzicht van alle retouraanvragen: status bijhouden, zoeken en cijfers.',url:'retouren/index.html',icon:'↩'},
+  // alleen host (key leeg = alleen host, test = niet in Accounts & toegang), opent in een nieuw tabblad
+  // lab = staat niet op de startpagina maar onder de tegel Labs (#/labs), alleen voor de host
+];
+const VERSIONS={"portaal": {"versie": "3.5"}};
+// Versies van de apps live ophalen, zodat de portaalpagina zelf niet verandert als alleen een app een nieuwe versie krijgt.
+const versionsReady=fetch('/versie.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{for(const [k,v] of Object.entries(j.apps||{}))if(k!=='portaal')VERSIONS[k]={versie:v.versie}}).catch(()=>{});
+versionsReady.then(()=>{if(auth&&auth.record&&!$('shell').classList.contains('hidden')){renderVersionTexts()}});
+const LEVELS=[['','Geen toegang'],['view','Alleen kijken'],['edit','Alles gebruiken']];
+/* Functioneringsgesprekken: Beheerder 1 = alles gebruiken; Beheerder 2 = alles gebruiken + krijgt de toegangscode voor de bezoeker.
+   Opslag: fp_access 'edit' (+ fp_codes = true voor Beheerder 2). De bezoeker is altijd het host-account (vast). */
+const FP_LEVELS=[['','Geen toegang'],['view','Alleen kijken'],['afd','Leidinggevende (afdeling)'],['edit','Beheerder 1'],['edit2','Beheerder 2']];
+/* Leidinggevende: ziet alleen medewerkers van de aangevinkte afdeling(en), nooit zijn eigen dossier (filter op de server: pb_hooks/fp_afdeling.js). */
+let FP_AFD=null;const fpAfdelingen=async()=>{if(!FP_AFD){try{FP_AFD=await api('GET','/api/fp/afdelingen')}catch(_){FP_AFD={echt:[],test:[]}}}return FP_AFD};
+const afdText=u=>{const a=(u.fp_afdelingen||[]);return a.length?a.join(', '):'nog geen afdeling'};
+const isFp=app=>app.id==='functioneringsportaal';
+/* Retouren: naast kijken/alles ook rollen (klantenservice, magazijn, financiën); wat elke rol mag staat in pb_hooks/rollen.js. */
+const RT_LEVELS=[['','Geen toegang'],['view','Alleen kijken'],['rol','Rollen kiezen'],['edit','Alles gebruiken']];
+const RT_ROLLEN=[['klantenservice','Klantenservice'],['magazijn','Magazijn'],['financien','Financiën']];
+const isRt=app=>app.id==='retouren';
+const rolText=u=>{const r=(u.rt_rollen||[]);return r.length?RT_ROLLEN.filter(x=>r.includes(x[0])).map(x=>x[1]).join(', '):'nog geen rol'};
+const levelsFor=app=>isFp(app)?FP_LEVELS:isRt(app)?RT_LEVELS:LEVELS;
+const levelLabel=(app,l)=>(levelsFor(app).find(x=>x[0]===l)||[0,'Geen toegang'])[1];
+const $=id=>document.getElementById(id);
+const AUTH_KEY='vp_auth';
+let auth=null;try{auth=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(_){auth=null}
+function saveAuth(a){auth=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(_){}}
+
+async function api(method,path,body){
+  const headers={'Content-Type':'application/json'};if(auth&&auth.token)headers.Authorization=auth.token;
+  const r=await fetch(path,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'});
+  let data={};try{data=await r.json()}catch(_){}
+  if(!r.ok){const err=new Error(data.message||('Fout '+r.status));err.status=r.status;err.data=data;throw err}
+  return data;
+}
+function msg(id,text,kind){const el=$(id);el.textContent=text||'';el.className='msg'+(text?' '+(kind||'error'):'')}
+function toast(text,error){const t=document.createElement('div');t.className='toast'+(error?' error':'');t.setAttribute('role','status');t.textContent=text;document.body.append(t);setTimeout(()=>t.remove(),2600)}
+function askConfirm(text,okText){return new Promise(res=>{const d=$('confirmDialog');$('confirmDialogText').textContent=text;$('confirmYes').textContent=okText||'OK';const done=v=>{$('confirmYes').onclick=$('confirmNo').onclick=d.oncancel=null;if(d.open)d.close();res(v)};$('confirmYes').onclick=()=>done(true);$('confirmNo').onclick=()=>done(false);d.oncancel=e=>{e.preventDefault();done(false)};d.showModal();$('confirmNo').focus()})}
+const email=v=>String(v||'').trim().toLowerCase();
+const isWorkMail=v=>/^[^@\s]+@voorbeeld\.nl$/.test(email(v));
+function friendly(err){
+  const d=err&&err.data&&err.data.data||{};
+  if(d.email&&d.email.code==='validation_not_unique')return 'Er bestaat al een account met deze werkmail. Log in of gebruik "Wachtwoord vergeten".';
+  if(d.password)return 'Het wachtwoord voldoet niet. Kies minimaal 10 tekens.';
+  if(err&&err.status===0)return 'Geen verbinding met de server.';
+  return (err&&err.data&&err.data.message&&!/Failed to create|Something went wrong/.test(err.data.message))?err.data.message:'Er ging iets mis. Probeer het opnieuw.';
+}
+
+/* ---------- Routering ---------- */
+const VIEWS=['viewLogin','viewRegister','viewConfirm','viewForgot','viewReset'];
+function show(view){if(view)document.body.classList.remove('donker');for(const v of VIEWS)$(v).classList.toggle('hidden',v!==view);$('shell').classList.toggle('hidden',!!view&&VIEWS.includes(view));}
+function returnTo(){const m=location.hash.match(/terug=([^&]+)/);const t=m?decodeURIComponent(m[1]):'';return /^\/[a-z0-9\-\/]*$/i.test(t)?t:''}
+async function route(){
+  const h=location.hash.replace(/^#/,'')||'/';
+  if(h.startsWith('/bevestigen/'))return confirmAccount(h.slice(12));
+  if(h.startsWith('/nieuw-wachtwoord/')){show('viewReset');msg('resetMsg','');return}
+  if(h.startsWith('/aanmelden')){show('viewRegister');loadInvite(h.slice(11));return}
+  if(h.startsWith('/wachtwoord-vergeten')){show('viewForgot');return}
+  if(!auth||!auth.token||h.startsWith('/login')){if(auth&&auth.token&&h.startsWith('/login'))return goHome();show('viewLogin');if(/verlopen=1/.test(location.hash))msg('loginMsg','Je sessie is verlopen. Log opnieuw in; dat is elke 30 dagen nodig.','ok');setTimeout(()=>$('loginEmail').focus(),30);return}
+  try{const r=await api('POST','/api/collections/users/auth-refresh');saveAuth({token:r.token,record:r.record})}
+  catch(e){if(e.status===401||e.status===403||e.status===404){saveAuth(null);location.hash='#/login';if(e.status===401)setTimeout(()=>msg('loginMsg','Je sessie is verlopen. Log opnieuw in; dat is elke 30 dagen nodig.','ok'),60);return}}
+  renderShell();
+  if(h.startsWith('/beheer')&&canManage())return showAdmin();
+  if(h.startsWith('/wachtwoord')){pwOnly=true;showHome();openPw();return}
+  showHome();
+}
+function goHome(){location.hash='#/'}
+window.addEventListener('hashchange',route);
+
+/* ---------- Inloggen e.d. ---------- */
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.submitter||e.target.querySelector('button');msg('loginMsg','');
+  const em=email($('loginEmail').value),pw=$('loginPassword').value;
+  if(!em||!pw)return msg('loginMsg','Vul je werkmail en wachtwoord in.');
+  btn.disabled=true;
+  try{
+    const r=await api('POST','/api/collections/users/auth-with-password',{identity:em,password:pw});
+    $('loginPassword').value='';finishLogin(r);
+  }catch(err){
+    if(err.status===401&&err.data&&err.data.mfaId){$('loginPassword').value='';return startOtp(em,err.data.mfaId)}
+    if(err.status===423)msg('loginMsg',err.data.message||'Je account is tijdelijk geblokkeerd. Probeer het over 15 minuten opnieuw of gebruik "Wachtwoord vergeten".');
+    else if(err.status===429)msg('loginMsg','Te veel pogingen vanaf dit adres. Wacht een minuut en probeer het opnieuw.');
+    else if(err.status===400&&err.data&&/^Onjuiste werkmail of wachtwoord\. Nog \d/.test(err.data.message||''))msg('loginMsg',err.data.message);
+    else if(err.status===403)msg('loginMsg','Je account is nog niet bevestigd. Klik op de link in de bevestigingsmail. Geen mail ontvangen? Gebruik "Wachtwoord vergeten", dan sturen we de bevestigingsmail opnieuw.');
+    else if(err.status===400)msg('loginMsg','Onjuiste werkmail of wachtwoord.');
+    else msg('loginMsg','Inloggen lukt nu niet. Probeer het later opnieuw.');
+  }finally{btn.disabled=false}
+});
+function finishLogin(r){saveAuth({token:r.token,record:r.record});const back=returnTo();if(back){location.href=back;return}location.hash='#/';route()}
+const OTP={email:'',mfaId:'',otpId:''};
+async function sendOtp(){const r=await api('POST','/api/collections/users/request-otp',{email:OTP.email});OTP.otpId=r.otpId}
+async function startOtp(em,mfaId){OTP.email=em;OTP.mfaId=mfaId;
+  try{await sendOtp()}catch(e){return msg('loginMsg',e.status===429?'Te veel codes aangevraagd. Wacht een paar minuten.':'De inlogcode kon niet worden verstuurd. Probeer het opnieuw.')}
+  $('loginForm').hidden=true;$('otpForm').hidden=false;$('otpInfo').textContent='Extra beveiliging: we hebben een inlogcode gestuurd naar '+em+'. De code is 5 minuten geldig.';msg('otpMsg','');$('otpCode').value='';$('otpCode').focus()}
+$('otpForm').addEventListener('submit',async e=>{e.preventDefault();const btn=e.target.querySelector('button[type=submit]');const code=$('otpCode').value.replace(/\D/g,'');
+  if(code.length!==6)return msg('otpMsg','Vul de 6 cijfers uit de mail in.');
+  btn.disabled=true;
+  try{const r=await api('POST','/api/collections/users/auth-with-otp',{otpId:OTP.otpId,password:code,mfaId:OTP.mfaId});$('otpForm').hidden=true;$('loginForm').hidden=false;finishLogin(r)}
+  catch(err){msg('otpMsg',err.status===429?'Te veel pogingen. Wacht een minuut.':'Deze code klopt niet of is verlopen. Vraag eventueel een nieuwe code aan.')}finally{btn.disabled=false}});
+$('otpResend').addEventListener('click',async()=>{try{await sendOtp();msg('otpMsg','Nieuwe code verstuurd.','ok')}catch(e){msg('otpMsg','Opnieuw versturen lukt nu niet. Wacht even.')}});
+$('registerForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.target.querySelector('button');msg('registerMsg','');
+  const name=$('regName').value.trim(),em=email($('regEmail').value),pw=$('regPassword').value,pw2=$('regPassword2').value;
+  if(!name)return msg('registerMsg','Vul je naam in.');
+  if(!isWorkMail(em))return msg('registerMsg','Gebruik je werkmail (eindigt op @voorbeeld.nl).');
+  if(pw.length<10)return msg('registerMsg','Kies een wachtwoord van minimaal 10 tekens.');
+  if(pw!==pw2)return msg('registerMsg','De wachtwoorden zijn niet gelijk.');
+  btn.disabled=true;
+  try{
+    const body={name,email:em,password:pw,passwordConfirm:pw2};if(INV.token)body.uitnodigingscode=INV.token;
+    await api('POST','/api/collections/users/records',body);
+    await api('POST','/api/collections/users/request-verification',{email:em});
+    e.target.reset();if(INV.email)$('regEmail').value=INV.email;msg('registerMsg','Gelukt! We hebben een bevestigingsmail gestuurd naar '+em+'. Klik op de link in die mail om je account te activeren.'+(INV.token?' Daarna kun je meteen inloggen: je toegang staat al klaar.':''),'ok');if(INV.token){INV.token='';$('registerForm').querySelector('button').disabled=true;$('registerForm').querySelector('button').hidden=true}
+  }catch(err){msg('registerMsg',friendly(err))}finally{btn.disabled=false}
+});
+async function confirmAccount(token){
+  show('viewConfirm');msg('confirmMsg','Bezig met bevestigen…','ok');
+  try{await api('POST','/api/collections/users/confirm-verification',{token});msg('confirmMsg','Je account is bevestigd. Je kunt nu inloggen. Je beheerder bepaalt tot welke apps je toegang krijgt.','ok')}
+  catch(_){msg('confirmMsg','Deze bevestigingslink is verlopen of al gebruikt. Probeer in te loggen; lukt dat niet, maak dan een nieuwe bevestigingsmail aan via "Wachtwoord vergeten" of vraag je beheerder.')}
+}
+$('forgotForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.target.querySelector('button');const em=email($('forgotEmail').value);
+  if(!isWorkMail(em))return msg('forgotMsg','Vul je werkmail in (eindigt op @voorbeeld.nl).');
+  btn.disabled=true;
+  try{await api('POST','/api/collections/users/request-password-reset',{email:em});try{await api('POST','/api/collections/users/request-verification',{email:em})}catch(_){}
+    msg('forgotMsg','Als er een account bestaat voor '+em+', ontvang je binnen enkele minuten een mail.','ok')}
+  catch(_){msg('forgotMsg','Dat lukt nu niet. Probeer het later opnieuw.')}finally{btn.disabled=false}
+});
+$('resetForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.target.querySelector('button');const token=location.hash.replace(/^#\/nieuw-wachtwoord\//,'');
+  const pw=$('resetPassword').value,pw2=$('resetPassword2').value;
+  if(pw.length<10)return msg('resetMsg','Kies een wachtwoord van minimaal 10 tekens.');
+  if(pw!==pw2)return msg('resetMsg','De wachtwoorden zijn niet gelijk.');
+  btn.disabled=true;
+  try{await api('POST','/api/collections/users/confirm-password-reset',{token,password:pw,passwordConfirm:pw2});e.target.reset();msg('resetMsg','Je nieuwe wachtwoord is opgeslagen en je account is (weer) vrijgegeven. Je kunt nu inloggen.','ok')}
+  catch(_){msg('resetMsg','Deze link is verlopen of al gebruikt. Vraag een nieuwe aan via "Wachtwoord vergeten".')}finally{btn.disabled=false}
+});
+$('logoutBtn').addEventListener('click',()=>{saveAuth(null);location.hash='#/login'});
+
+/* ---------- Startscherm ---------- */
+function canManage(){const r=auth&&auth.record;return !!(r&&(r.isHost||r.isAdmin))}
+function levelOf(rec,key){return rec.isHost?'edit':key?(rec[key]||''):''}
+function curLevel(u,app){if(u.isHost)return 'edit';const l=u[app.key]||'';return isFp(app)&&l==='edit'&&u.fp_codes?'edit2':l}
+const SHARED_APPS=()=>APPS.filter(a=>!a.test);
+function renderVersionTexts(){$('versionFoot').textContent='Demo Portaal '+VERSIONS.portaal.versie+(auth.record.isHost?' \u00b7 '+APPS.map(a=>a.name+' '+((VERSIONS[a.id]||{}).versie||'…')).join(' \u00b7 '):'');
+  document.querySelectorAll('.tile-version[data-app]').forEach(el=>{el.textContent='Versie '+((VERSIONS[el.dataset.app]||{}).versie||'…')})}
+function renderShell(){renderVersionTexts();const r=auth.record;$('whoName').textContent=r.name||r.email;$('whoEmail').textContent=r.isHost?r.email+' · Host':r.isAdmin?r.email+' · Beheerder':r.email;const ia=$('adminWho');if(ia)ia.textContent='Ingelogd als '+r.email;show(null)}
+/* ---------- Startpagina-widgets ---------- */
+let WDATA=null,wEdit=false,wSaveT=null;
+const WINFO={labs:{id:'labs',name:'Labs',icon:'⚗',url:'#/labs'},beheer:{id:'beheer',name:'Accounts & toegang',icon:'⚙',url:'#/beheer'}};
+function homePref(){const p=(auth.record.startpagina&&typeof auth.record.startpagina==='object')?auth.record.startpagina:{};return {thema:['licht','donker'].includes(p.thema)?p.thema:'auto',volgorde:Array.isArray(p.volgorde)?p.volgorde:[],verborgen:Array.isArray(p.verborgen)?p.verborgen:[],grootte:p.grootte&&typeof p.grootte==='object'?p.grootte:{}}}
+function savePref(p){auth.record.startpagina=p;saveAuth(auth);clearTimeout(wSaveT);wSaveT=setTimeout(()=>{api('POST','/api/portaal/startpagina',p).catch(()=>toast('Je indeling kon niet worden opgeslagen.',true))},500)}
+/* Thema: automatisch (volgt telefoon/computer), licht of donker. Knop wisselt in die volgorde. */
+const DONKER_MQ=matchMedia('(prefers-color-scheme: dark)');
+function applyThema(){const t=homePref().thema,d=t==='donker'||(t==='auto'&&DONKER_MQ.matches);document.body.classList.toggle('donker',d);$('themaBtn').textContent=t==='auto'?'◐ Automatisch':t==='donker'?'☾ Donker':'☀ Licht';$('themaBtn').title='Klik om te wisselen: automatisch → licht → donker'}
+DONKER_MQ.addEventListener('change',()=>{if(!$('shell').classList.contains('hidden'))applyThema()});
+function widgetItems(){const r=auth.record,out=[];
+  for(const app of APPS){if(app.lab)continue;if(!levelOf(r,app.key))continue;out.push({id:app.id,name:app.name,icon:app.icon,url:app.url,app,external:app.external})}
+  if(r.isHost&&APPS.some(a=>a.lab))out.push(WINFO.labs);if(canManage())out.push(WINFO.beheer);return out}
+function showWidgets(){
+  const items=widgetItems(),p=homePref();
+  // Precies één app en verder niets (dus geen Accounts & toegang): die app meteen openen.
+  if(items.length===1&&items[0].app&&!items[0].external&&!pwOnly){location.replace(items[0].url);return}
+  $('noApps').classList.toggle('hidden',items.length>0);
+  $('homeSub').textContent=wEdit?'Sleep om te verplaatsen · S, M of L voor de grootte · − om te verbergen':'Kies een app om verder te gaan.';$('homeSub').classList.toggle('hidden',!wEdit);
+  renderWidgets();
+  if(!WDATA||!wEdit)api('GET','/api/portaal/widgets').then(d=>{WDATA=d||{};renderWidgets()}).catch(()=>{WDATA={}})}
+function sizeOf(id,p){const g=p.grootte[id];if(g)return g;return id==='retouren'?'L':'M'}
+function renderWidgets(){
+  const grid=$('wgrid'),p=homePref(),items=widgetItems();
+  const order=[...p.volgorde.filter(id=>items.some(i=>i.id===id)),...items.map(i=>i.id).filter(id=>!p.volgorde.includes(id))];
+  grid.replaceChildren();grid.classList.toggle('edit',wEdit);
+  for(const id of order){if(p.verborgen.includes(id))continue;const it=items.find(i=>i.id===id);grid.append(widgetEl(it,sizeOf(id,p)))}
+  const hid=items.filter(i=>p.verborgen.includes(i.id)),hb=$('wHidden');hb.replaceChildren();hb.classList.toggle('hidden',!wEdit||!hid.length);
+  if(wEdit&&hid.length){hb.append('Verborgen:');for(const it of hid){const b=document.createElement('button');b.type='button';b.textContent='+ '+it.name;b.onclick=()=>{const q=homePref();q.verborgen=q.verborgen.filter(x=>x!==it.id);savePref(q);renderWidgets()};hb.append(b)}}
+}
+const esc2=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nl=n=>n==null?'–':Number(n).toLocaleString('nl-NL');
+const dKort=ds=>{const d=new Date(ds+'T12:00:00');return d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'})};
+function widgetBody(it,size){const D=WDATA||{},r=auth.record,L=size==='L',M=size!=='S';
+  const laden='<div class="w-sub">…</div>';
+  switch(it.id){
+    case 'retouren':{const x=D.retouren;if(!x)return WDATA?'<div class="w-sub">'+esc2(it.app.desc)+'</div>':laden;
+      const nb=x.laat?'<b style="color:#c10a4a">'+x.laat+'</b> nog niet ontvangen (na 14 dagen)':'niets te laat';
+      let h=`<div class="w-big">${nl(x.open)}<small>nog open</small></div><div class="w-sub">${nb}</div>`;
+      if(M&&!L)h=`<div class="w-cols"><div><div class="w-big">${nl(x.open)}</div><div class="w-sub">nog open</div></div><div><div class="w-big">${nl(x.weken[7])}</div><div class="w-sub">deze week aangemeld</div></div><div><div class="w-big"${x.laat?' style="color:#c10a4a"':''}>${nl(x.laat)}</div><div class="w-sub">nog niet ontvangen</div></div></div>`;
+      if(L){const mx=Math.max(1,...x.weken);h+=`<div class="w-bars" title="Retouren per week (laatste 8 weken)">${x.weken.map((v,i)=>`<i class="${i===7?'nu':''}" style="height:${Math.round(v/mx*100)}%" title="${v}"></i>`).join('')}</div><div class="w-list"><div><span>Deze week aangemeld</span><b>${nl(x.weken[7])} <span style="font-weight:600">(vorige week ${nl(x.weken[6])})</span></b></div><div><span>Vaakst retour</span><b>${esc2(x.top_product||'–')}</b></div><div><span>Meest genoemde reden</span><b>${esc2(x.top_reden||'–')}</b></div></div>`}
+      return h}
+    case 'functioneringsportaal':{if(r.isHost)return '<div class="w-sub">Bezoeker · toegangscode nodig</div>';const x=D.functioneringsportaal;if(!x)return WDATA?'<div class="w-sub">'+esc2(it.app.desc)+'</div>':laden;
+      let h=`<div class="w-big">${nl(x.nog_te_voeren)}<small>nog te voeren</small></div>`;
+      if(M)h=`<div class="w-cols"><div><div class="w-big">${nl(x.medewerkers)}</div><div class="w-sub">medewerkers</div></div><div><div class="w-big">${nl(x.nog_te_voeren)}</div><div class="w-sub">nog te voeren</div></div><div><div class="w-big">${nl(x.afgerond)}</div><div class="w-sub">afgeronde gesprekken</div></div></div>`;
+      if(L)h+='<div class="w-list" style="margin-top:8px"><div><span style="font-weight:700;color:var(--ink)">Gepland komende week</span></div>'+(x.volgende.length?x.volgende.map(v=>`<div><span>${esc2(v.naam)}</span><b>${dKort(v.datum)} ${esc2(v.tijd)}</b></div>`).join(''):'<div><span>Niets gepland</span></div>')+'</div>';
+      return h}
+    case 'mengplanner':{const m=D.mengverf;if(m&&M){const d0=m.dagen[0];let h=`<div class="w-big">${nl(d0.orders)}<small>mengorders verwacht ${dKort(d0.datum)}</small></div>`;
+        if(L)h+='<div class="w-list" style="margin-top:8px">'+m.dagen.map(d=>`<div><span>${dKort(d.datum)}${d.feestdag?' · '+esc2(d.feestdag):''}</span><b>${nl(d.orders)} orders · ${nl(d.blikken)} blikken</b></div>`).join('')+'</div>';return h}
+      return '<div class="w-sub">'+esc2(it.app.desc)+'</div>'}
+    case 'server':{const x=D.server;if(!x)return WDATA?'<div class="w-sub">Niet beschikbaar</div>':laden;const ok=!x.meldingen.length;
+      let h=`<div style="font-weight:800"><span class="w-dot${ok?'':' bad'}"></span>${ok?'Alles in orde':x.meldingen.length+' melding'+(x.meldingen.length>1?'en':'')}</div>`;
+      if(!M)return h+`<div class="w-sub">processor ${nl(x.cpu)}%</div>`;
+      h+=`<div class="w-cols"><div><div class="w-big">${nl(x.cpu)}%</div><div class="w-sub">processor</div></div><div><div class="w-big">${nl(x.geheugen)}%</div><div class="w-sub">geheugen</div></div><div><div class="w-big">${nl(x.schijf)}%</div><div class="w-sub">schijf</div></div></div>`;
+      if(L)h+='<div class="w-list" style="margin-top:8px">'+(x.meldingen.map(t=>`<div><span style="color:#c10a4a;white-space:normal">${esc2(t)}</span></div>`).join(''))+`<div><span>Laatste back-up</span><b>${x.backup?new Date(x.backup).toLocaleString('nl-NL',{weekday:'short',hour:'2-digit',minute:'2-digit'}):'nog niet gezien'}</b></div></div>`;
+      return h}
+    case 'labs':{const labs=APPS.filter(a=>a.lab);let h=`<div class="w-sub">${labs.length} apps in ontwikkeling</div>`;
+      if(M)h=labs.map(a=>`<div class="w-go" role="link" tabindex="0" data-go="${esc2(a.url)}"${a.external?' data-ext="1"':''} aria-label="${esc2(a.name)} openen${a.external?' (nieuw tabblad)':''}"><span aria-hidden="true">${esc2(a.icon)}</span><b>${esc2(a.name)}</b><small>Versie ${esc2((VERSIONS[a.id]||{}).versie||'…')}</small><span class="ar" aria-hidden="true">${a.external?'↗':'›'}</span></div>`).join('');
+      if(L&&D.mengverf){const d0=D.mengverf.dagen[0];h+=`<div class="w-list" style="margin-top:6px"><div><span>Mengverf ${dKort(d0.datum)}</span><b>${nl(d0.orders)} orders</b></div></div>`}
+      return h}
+    case 'beheer':{const x=D.beheer;if(!x)return WDATA?'<div class="w-sub">Accounts bekijken en toegang geven</div>':laden;
+      let h=`<div class="w-big">${nl(x.accounts)}<small>accounts</small></div>`;
+      if(M)h+=`<div class="w-sub">${x.zonder_toegang?'<b style="color:#c10a4a">'+x.zonder_toegang+'</b> nog zonder toegang':'iedereen heeft toegang'}${x.uitnodigingen!=null?' · '+x.uitnodigingen+' open uitnodiging'+(x.uitnodigingen===1?'':'en'):''}</div>`;
+      return h}
+  }
+  return '<div class="w-sub">'+esc2(it.app?it.app.desc:'')+'</div>'}
+function widgetEl(it,size){
+  const a=document.createElement('a');a.className='w '+size;a.href=it.url;a.dataset.id=it.id;if(it.external&&!wEdit){a.target='_blank';a.rel='noopener'}
+  const v=it.app?((VERSIONS[it.app.id]||{}).versie||''):'';
+  a.innerHTML=`<div class="w-top"><span class="w-ic" aria-hidden="true">${esc2(it.icon)}</span><div style="min-width:0"><div class="w-name">${esc2(it.name)}</div>${size!=='S'&&v?'<div class="w-sub">Versie '+esc2(v)+'</div>':''}</div></div><div class="w-body">${widgetBody(it,size)}</div>`;
+  const del=document.createElement('button');del.type='button';del.className='w-del';del.textContent='−';del.setAttribute('aria-label',it.name+' verbergen');
+  del.onclick=e=>{e.preventDefault();e.stopPropagation();const q=homePref();if(!q.verborgen.includes(it.id))q.verborgen.push(it.id);savePref(q);renderWidgets()};
+  const ctl=document.createElement('div');ctl.className='w-ctl';
+  for(const s of ['S','M','L']){const b=document.createElement('button');b.type='button';b.textContent=s;b.className=s===size?'on':'';b.setAttribute('aria-label',it.name+' grootte '+s);
+    b.onclick=e=>{e.preventDefault();e.stopPropagation();const q=homePref();q.grootte={...q.grootte,[it.id]:s};savePref(q);renderWidgets()};ctl.append(b)}
+  a.append(del,ctl);
+  a.addEventListener('click',e=>{if(wEdit){e.preventDefault();return}const g=e.target.closest('[data-go]');if(g){e.preventDefault();e.stopPropagation();if(g.dataset.ext)window.open(g.dataset.go,'_blank','noopener');else location.href=g.dataset.go}});
+  a.addEventListener('keydown',e=>{const g=e.target.closest&&e.target.closest('[data-go]');if(g&&!wEdit&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopPropagation();g.click()}});
+  return a}
+// Slepen (muis en vinger) in bewerkmodus
+(function(){let d=null;const grid=()=>$('wgrid');
+  document.addEventListener('pointerdown',e=>{if(!wEdit)return;const w=e.target.closest('#wgrid .w');if(!w||e.target.closest('.w-ctl,.w-del'))return;e.preventDefault();
+    d={w,x:e.clientX,y:e.clientY,id:e.pointerId};w.classList.add('drag');w.setPointerCapture(e.pointerId)});
+  document.addEventListener('pointermove',e=>{if(!d||e.pointerId!==d.id)return;
+    d.w.style.transform=`translate(${e.clientX-d.x}px,${e.clientY-d.y}px)`;
+    const over=document.elementsFromPoint(e.clientX,e.clientY).find(el=>el.classList&&el.classList.contains('w')&&el!==d.w);
+    if(over){const r0=d.w.getBoundingClientRect(),o=over.getBoundingClientRect(),voor=(e.clientY<o.top+o.height/2&&e.clientX<o.right)||e.clientX<o.left+o.width/2;
+      const ref=voor?over:over.nextSibling;if(ref!==d.w&&ref!==d.w.nextSibling){d.w.style.transform='';const a=d.w.getBoundingClientRect();grid().insertBefore(d.w,ref);const b=d.w.getBoundingClientRect();d.x+=b.left-a.left;d.y+=b.top-a.top;d.w.style.transform=`translate(${e.clientX-d.x}px,${e.clientY-d.y}px)`}}});
+  const end=e=>{if(!d||e.pointerId!==d.id)return;d.w.classList.remove('drag');d.w.style.transform='';d=null;
+    const q=homePref();q.volgorde=[...grid().querySelectorAll('.w')].map(x=>x.dataset.id);savePref(q)};
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end)})();
+$('editBtn').addEventListener('click',()=>{wEdit=!wEdit;$('editBtn').textContent=wEdit?'Klaar':'Bewerken';$('editBtn').classList.toggle('on',wEdit);showWidgets()});
+$('themaBtn').addEventListener('click',()=>{const q=homePref();q.thema={auto:'licht',licht:'donker',donker:'auto'}[q.thema];savePref(q);applyThema()});
+function showHome(){
+  $('viewAdmin').classList.add('hidden');$('viewHome').classList.remove('hidden');
+  const r=auth.record,tiles=$('tiles');tiles.replaceChildren();
+  const labs=!!r.isHost&&/^#\/labs/.test(location.hash);
+  const uur=new Date().getHours(),groet=uur<6?'Goedenacht':uur<12?'Goedemorgen':uur<18?'Goedemiddag':'Goedenavond';
+  $('homeTitle').textContent=labs?'Labs':groet+(r.name?', '+r.name.split(' ')[0]:'')+'.';
+  $('homeDate').textContent=labs?'':new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).replace(/^./,c=>c.toUpperCase());
+  $('homeDate').classList.toggle('hidden',labs);
+  $('homeSub').textContent=labs?'Apps in ontwikkeling. Alleen jij ziet deze; collega’s krijgen er geen toegang toe tot je ze los zet.':'Kies een app om verder te gaan.';
+  $('labsBack').classList.toggle('hidden',!labs);
+  $('tiles').classList.toggle('hidden',!labs);$('wgrid').classList.toggle('hidden',labs);$('homeTools').classList.toggle('hidden',labs);if(labs)$('wHidden').classList.add('hidden');
+  applyThema();
+  if(!labs)return showWidgets();
+  let count=0,only=null;
+  for(const app of APPS){
+    if(!!app.lab!==labs)continue;
+    const lvl=levelOf(r,app.key);if(!lvl)continue;count++;only=app;
+    const a=document.createElement('a');a.className='tile';a.href=app.url;if(app.external){a.target='_blank';a.rel='noopener'}
+    const ic=document.createElement('span');ic.className='icon';ic.setAttribute('aria-hidden','true');ic.textContent=app.icon;
+    const h=document.createElement('h2');h.textContent=app.name;const p=document.createElement('p');p.textContent=app.desc;
+    const b=document.createElement('span');b.className='badge '+(app.test?'test':lvl);b.textContent=app.badge?app.badge:app.test?'Testversie · alleen jij':isFp(app)?(r.isHost?'Bezoeker · code nodig':lvl==='edit'?(r.fp_codes?'Beheerder 2':'Beheerder 1'):lvl==='afd'?'Leidinggevende':'Alleen kijken'):lvl==='edit'?'Alles gebruiken':'Alleen kijken';if(isFp(app)&&r.isHost)b.className='badge view'
+    const ft=document.createElement('div');ft.className='tile-foot';const vv=document.createElement('span');vv.className='tile-version';vv.dataset.app=app.id;vv.textContent='Versie '+((VERSIONS[app.id]||{}).versie||'…');ft.append(b,vv);
+    a.append(ic,h,p,ft);tiles.append(a);
+  }
+  if(labs){$('noApps').classList.add('hidden');return}
+  if(r.isHost){
+    const a=document.createElement('a');a.className='tile tile-labs';a.href='#/labs';
+    const ic=document.createElement('span');ic.className='icon';ic.setAttribute('aria-hidden','true');ic.textContent='⚗';
+    const h=document.createElement('h2');h.textContent='Labs';const p=document.createElement('p');p.textContent='Apps in ontwikkeling: '+APPS.filter(x=>x.lab).map(x=>x.name).join(', ')+'.';
+    const b=document.createElement('span');b.className='badge host';b.textContent='Alleen voor host · '+APPS.filter(x=>x.lab).length+' apps';
+    a.append(ic,h,p,b);tiles.append(a);count++;
+  }
+  if(canManage()){
+    const a=document.createElement('a');a.className='tile';a.href='#/beheer';
+    const ic=document.createElement('span');ic.className='icon';ic.setAttribute('aria-hidden','true');ic.textContent='⚙';
+    const h=document.createElement('h2');h.textContent='Accounts & toegang';const p=document.createElement('p');p.textContent='Accounts bekijken, collega’s uitnodigen en per app toegang geven.';
+    const b=document.createElement('span');b.className='badge host';b.textContent=r.isHost?'Alleen voor host':'Beheerder';
+    a.append(ic,h,p,b);tiles.append(a);count++;
+  }
+  // Precies één app en verder niets (dus geen Accounts & toegang): die app meteen openen.
+  if(count===1&&only&&!only.external&&!pwOnly){location.replace(only.url);return}
+  $('noApps').classList.toggle('hidden',count>0);
+}
+
+/* ---------- Beheer ---------- */
+let users=[];
+async function showAdmin(){
+  applyThema();
+  $('viewHome').classList.add('hidden');$('viewAdmin').classList.remove('hidden');
+  $('inviteLink').value=location.href.split('#')[0]+'#/aanmelden';
+  $('testPanel').classList.toggle('hidden',!auth.record.isHost);$('logPanel').classList.toggle('hidden',!auth.record.isHost);
+  loadInvites();if(auth.record.isHost)loadLog(true);
+  const note=$('adminRoleNote');
+  const fpUitleg=' Functioneringsgesprekken: Beheerder 1 mag alles gebruiken. Beheerder 2 mag alles gebruiken en krijgt per mail de 4-cijferige toegangscode als de bezoeker ('+'host'+') toegang vraagt. De bezoeker kan pas met die code de echte gegevens zien.';
+  if(auth.record.isHost){note.textContent='Maak iemand Beheerder als die ook accounts mag beheren als jij er niet bent. Een beheerder kan jouw account en dat van andere beheerders niet aanpassen.'+fpUitleg;note.classList.remove('hidden')}
+  else{note.textContent='Je bent beheerder: je beheert de accounts van collega’s. Het host-account en andere beheerders kun je niet aanpassen; je eigen toegang regelt de host.'+fpUitleg;note.classList.remove('hidden')}
+  try{const r=await api('GET','/api/collections/users/records?perPage=500&sort=name');users=r.items||[];renderUsers()}
+  catch(e){toast('Accounts laden lukt niet.',true)}
+}
+let selUser=null;
+function userSummary(u){if(u.isHost)return 'Host · volledige toegang';const apps=SHARED_APPS().filter(a=>curLevel(u,a));
+  const extra=[];const lv=curLevel(u,APPS.find(a=>a.id==='retouren')||{});if(lv==='rol'&&(u.rt_rollen||[]).length)extra.push(rolText(u));if(u.fp_access==='afd')extra.push('Leidinggevende '+afdText(u));
+  return (u.isAdmin?'Beheerder · ':'')+(apps.length?apps.length+' app'+(apps.length>1?'s':''):'Nog geen toegang')+(extra.length?' · '+extra.join(' · '):'')}
+function renderUsers(){
+  const term=$('userSearch').value.trim().toLowerCase(),body=$('usersBody');body.replaceChildren();
+  const list=users.filter(u=>!u.is_test).filter(u=>!term||((u.name||'')+' '+u.email).toLowerCase().includes(term)).sort((a,b)=>(b.isHost-a.isHost)||(b.isAdmin-a.isAdmin)||String(a.name||a.email).localeCompare(String(b.name||b.email),'nl'));
+  $('usersEmpty').classList.toggle('hidden',users.some(u=>!u.isHost));
+  if(!selUser||!users.some(u=>u.id===selUser))selUser=(list.find(u=>!u.isHost)||list[0]||{}).id||null;
+  for(const u of list){
+    const b=document.createElement('button');b.type='button';b.className='acc-row';b.dataset.uid=u.id;b.setAttribute('aria-selected',String(u.id===selUser));
+    const lock=lockedUntil(u);
+    b.innerHTML='<span class="av"></span><span class="txt"><b></b><small></small></span>'+(lock?'<span class="dotx lock" title="Geblokkeerd"></span>':!u.verified&&!u.isHost?'<span class="dotx wait" title="Wacht op bevestiging"></span>':'');
+    b.querySelector('.av').textContent=String(u.name||u.email||'?').trim().charAt(0).toUpperCase();
+    b.querySelector('b').textContent=u.name||'(geen naam)';b.querySelector('small').textContent=userSummary(u);
+    b.addEventListener('click',()=>{selUser=u.id;renderUsers();if(matchMedia('(max-width:860px)').matches)$('userDetail').scrollIntoView({behavior:'smooth',block:'start'})});
+    body.append(b);
+  }
+  renderDetail(users.find(u=>u.id===selUser));
+}
+const KORT={'':'Geen','view':'Kijken','edit':'Alles','edit2':'Beheerder 2','afd':'Leidinggevende','rol':'Rollen'};
+// Keuzelijst omzetten naar knoppen (de lijst blijft de bron, zodat opslaan/terugzetten hetzelfde werkt)
+function segmented(sel,app){
+  const seg=document.createElement('div');seg.className='seg';seg.setAttribute('role','group');seg.setAttribute('aria-label',sel.getAttribute('aria-label')||'');
+  for(const o of sel.options){const b=document.createElement('button');b.type='button';b.dataset.v=o.value;b.textContent=isFp(app)&&o.value==='edit'?'Beheerder 1':KORT[o.value]!=null?KORT[o.value]:o.textContent;b.title=o.textContent;
+    b.onclick=()=>{if(sel.value===o.value||sel.disabled)return;sel.value=o.value;sel.dispatchEvent(new Event('change'))};seg.append(b)}
+  const sync=()=>{for(const b of seg.children){b.classList.toggle('on',b.dataset.v===sel.value);b.disabled=sel.disabled}};
+  new MutationObserver(sync).observe(sel,{attributes:true});sel.addEventListener('change',()=>setTimeout(sync,0));sync();
+  sel.style.display='none';return seg}
+function refreshRow(u){const r=document.querySelector('.acc-row[data-uid="'+u.id+'"] small');if(r)r.textContent=userSummary(u)}
+function renderDetail(u){const box=$('userDetail');box.replaceChildren();
+  if(!u){box.innerHTML='<p class="muted">Kies links een collega.</p>';return}
+  const lock=lockedUntil(u),edit=mayEdit(u);
+  const head=document.createElement('div');head.className='ad-head';
+  head.innerHTML='<span class="av big"></span><div style="min-width:0;flex:1"><h2></h2><div class="sub"></div></div>';
+  head.querySelector('.av').textContent=String(u.name||u.email||'?').trim().charAt(0).toUpperCase();
+  head.querySelector('h2').textContent=u.name||'(geen naam)';
+  const st=u.isHost?'Host':lock?'Geblokkeerd tot '+lock:u.verified?'':'Wacht op bevestiging';
+  head.querySelector('.sub').textContent=[u.email||'(e-mail niet zichtbaar)',lastLoginText(u),st,u.isAdmin&&!u.isHost?'Beheerder':''].filter(Boolean).join(' · ');
+  if(auth.record.isHost&&!u.isHost)head.append(makeRoleSelect(u));
+  box.append(head);
+  for(const app of SHARED_APPS()){
+    const row=document.createElement('div');row.className='ad-app';const t=document.createElement('b');t.textContent=app.name;row.append(t);
+    const c=document.createElement('div');
+    if(u.isHost){const f=document.createElement('span');f.className='fixed-level'+(isFp(app)?' visitor':'');f.textContent=isFp(app)?'Bezoeker · code nodig':'Host · volledige toegang';c.append(f)}
+    else if(edit){const w=makeSwitch(u,app);const sel=w.tagName==='SELECT'?w:w.querySelector('select');if(sel){const seg=segmented(sel,app);if(w===sel){c.append(sel,seg)}else{w.insertBefore(seg,sel.nextSibling);c.append(w)}}else c.append(w)}
+    else{const f=document.createElement('span');f.className='fixed-level';const lv=curLevel(u,app);f.textContent=isRt(app)&&lv==='rol'?'Rollen: '+rolText(u):isFp(app)&&lv==='afd'?'Leidinggevende: '+afdText(u):levelLabel(app,lv);c.append(f)}
+    row.append(c);box.append(row);
+  }
+  const act=document.createElement('div');act.className='ad-acts';
+  if(!u.isHost&&edit&&lock){const ul=document.createElement('button');ul.type='button';ul.className='act-btn warn';ul.textContent='Nu vrijgeven';ul.addEventListener('click',()=>unlockUser(u,ul));act.append(ul)}
+  if(!u.isHost&&edit){const rs=document.createElement('button');rs.type='button';rs.className='act-btn'+(u.locked?' warn':'');rs.textContent='Wachtwoord resetten';rs.addEventListener('click',()=>resetUser(u,rs));act.append(rs)}
+  if(!u.isHost&&edit){const del=document.createElement('button');del.type='button';del.className='icon-btn';del.textContent='Account verwijderen';del.style.marginLeft='auto';del.addEventListener('click',()=>removeUser(u));act.append(del)}
+  if(act.children.length)box.append(act);
+}
+function lockedUntil(u){if(!u.locked)return '';const t=new Date(String(u.locked_at||'').replace(' ','T').replace(/Z?$/,'Z'));if(isNaN(t))return '';const end=new Date(t.getTime()+15*60e3);if(end<=new Date())return '';return end.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}
+function mayEdit(u){const me=auth.record;if(me.isHost)return true;if(!me.isAdmin)return false;return !u.isHost&&!u.isAdmin&&u.id!==me.id}
+function makeRoleSelect(u){
+  const sel=document.createElement('select');sel.className='lvl-select role-select';sel.setAttribute('aria-label','Rol van '+(u.name||u.email));
+  for(const [v,l] of [['','Collega'],['admin','Beheerder']]){const o=document.createElement('option');o.value=v;o.textContent=l;sel.append(o)}
+  sel.value=u.isAdmin?'admin':'';sel.dataset.role=sel.value;
+  sel.addEventListener('change',async()=>{
+    const want=sel.value==='admin';
+    if(want&&!await askConfirm((u.name||u.email)+' beheerder maken? Diegene kan dan accounts van collega’s beheren (toegang geven, vrijgeven, verwijderen), maar niet jouw account. Bij het inloggen krijgt diegene voortaan ook een inlogcode per mail.','Beheerder maken')){sel.value=u.isAdmin?'admin':'';return}
+    sel.disabled=true;
+    try{const r=await api('PATCH','/api/collections/users/records/'+u.id,{isAdmin:want});Object.assign(u,r);toast((u.name||u.email)+(want?' is nu beheerder':' is geen beheerder meer'));renderUsers()}
+    catch(e){sel.value=u.isAdmin?'admin':'';toast('Opslaan lukt niet. Probeer het opnieuw.',true)}
+    finally{sel.disabled=false}
+  });
+  return sel;
+}
+async function unlockUser(u,btn){
+  btn.disabled=true;
+  try{await api('POST','/api/portaal/ontgrendelen/'+u.id);u.locked=false;u.failed_logins=0;u.locked_at='';renderUsers();toast((u.name||u.email)+' kan weer inloggen.')}
+  catch(e){btn.disabled=false;toast(e.message||'Vrijgeven lukt niet.',true)}
+}
+function makeSwitch(u,app){
+  if(isRt(app))return makeRtSwitch(u,app);
+  if(isFp(app))return makeFpSwitch(u,app);
+  const sel=document.createElement('select');sel.className='lvl-select';sel.setAttribute('aria-label',app.name+' voor '+(u.name||u.email));
+  for(const [lvl,label] of levelsFor(app)){const o=document.createElement('option');o.value=lvl;o.textContent=label;sel.append(o)}
+  const cur=curLevel(u,app);sel.value=cur;sel.dataset.level=cur;
+  sel.addEventListener('change',()=>setLevel(u,app,sel.value,sel));
+  return sel;
+}
+function makeFpSwitch(u,app){
+  const wrap=document.createElement('div');
+  const sel=document.createElement('select');sel.className='lvl-select';sel.setAttribute('aria-label',app.name+' voor '+(u.name||u.email));
+  for(const [lvl,label] of FP_LEVELS){const o=document.createElement('option');o.value=lvl;o.textContent=label;sel.append(o)}
+  const cur=curLevel(u,app);sel.value=cur;sel.dataset.level=cur;
+  const box=document.createElement('div');box.className='rol-box';
+  const draw=async()=>{box.replaceChildren();box.hidden=sel.value!=='afd';if(box.hidden)return;
+    const lijst=[...new Set([...(await fpAfdelingen()).echt,...(u.fp_afdelingen||[])])].sort((a,b)=>a.localeCompare(b,'nl'));
+    if(!lijst.length){const p=document.createElement('small');p.textContent='Nog geen afdelingen in de app.';box.append(p);return}
+    for(const k of lijst){const lab=document.createElement('label');const cb=document.createElement('input');cb.type='checkbox';cb.checked=(u.fp_afdelingen||[]).includes(k);
+      cb.addEventListener('change',async()=>{const next=lijst.filter(x=>x===k?cb.checked:(u.fp_afdelingen||[]).includes(x));cb.disabled=true;
+        try{const r=await api('PATCH','/api/collections/users/records/'+u.id,{fp_afdelingen:next});Object.assign(u,r);refreshRow(u);toast((u.name||u.email)+': leidinggevende van '+afdText(u))}
+        catch(e){cb.checked=!cb.checked;toast('Opslaan lukt niet. Probeer het opnieuw.',true)}finally{cb.disabled=false}});
+      lab.append(cb,document.createTextNode(' '+k));box.append(lab)}};
+  sel.addEventListener('change',async()=>{await setLevel(u,app,sel.value,sel);draw()});
+  draw();wrap.append(sel,box);return wrap;
+}
+function makeRtSwitch(u,app){
+  const wrap=document.createElement('div');
+  const sel=document.createElement('select');sel.className='lvl-select';sel.setAttribute('aria-label',app.name+' voor '+(u.name||u.email));
+  for(const [lvl,label] of RT_LEVELS){const o=document.createElement('option');o.value=lvl;o.textContent=label;sel.append(o)}
+  const cur=curLevel(u,app);sel.value=cur;sel.dataset.level=cur;
+  const box=document.createElement('div');box.className='rol-box';
+  const draw=()=>{box.replaceChildren();box.hidden=sel.value!=='rol';
+    for(const [k,l] of RT_ROLLEN){const lab=document.createElement('label');const cb=document.createElement('input');cb.type='checkbox';cb.checked=(u.rt_rollen||[]).includes(k);
+      cb.addEventListener('change',async()=>{const next=RT_ROLLEN.map(x=>x[0]).filter(x=>x===k?cb.checked:(u.rt_rollen||[]).includes(x));cb.disabled=true;
+        try{const r=await api('PATCH','/api/collections/users/records/'+u.id,{rt_rollen:next});Object.assign(u,r);refreshRow(u);toast((u.name||u.email)+': Retouren → '+rolText(u))}
+        catch(e){cb.checked=!cb.checked;toast('Opslaan lukt niet. Probeer het opnieuw.',true)}finally{cb.disabled=false}});
+      lab.append(cb,document.createTextNode(' '+l));box.append(lab)}};
+  sel.addEventListener('change',async()=>{await setLevel(u,app,sel.value,sel);draw()});
+  draw();wrap.append(sel,box);return wrap;
+}
+async function setLevel(u,app,lvl,sel){
+  if(curLevel(u,app)===lvl)return;
+  const val=lvl;
+  sel.disabled=true;
+  const body=isFp(app)?{fp_access:val==='edit2'?'edit':val,fp_codes:val==='edit2'}:{[app.key]:val};
+  try{const r=await api('PATCH','/api/collections/users/records/'+u.id,body);Object.assign(u,r);if(u.id===auth.record.id){auth.record=Object.assign(auth.record,r);saveAuth(auth)}
+    sel.dataset.level=lvl;refreshRow(u);
+    toast((u.name||u.email)+': '+app.name+' → '+levelLabel(app,lvl)+(isRt(app)&&lvl==='rol'?' ('+rolText(u)+')':'')+(isFp(app)&&lvl==='afd'?' – vink hieronder de afdeling(en) aan':''));
+  }catch(e){sel.value=curLevel(u,app);toast('Opslaan lukt niet. Probeer het opnieuw.',true)}
+  finally{sel.disabled=false}
+}
+async function resetUser(u,btn){
+  if(!await askConfirm('Een mail sturen naar '+(u.email||u.name)+' waarmee '+(u.name||'deze persoon')+' zelf een nieuw wachtwoord kiest?'+(u.locked?' Het account wordt vrijgegeven zodra het nieuwe wachtwoord is opgeslagen.':''),'Mail sturen'))return;
+  btn.disabled=true;
+  try{await api('POST','/api/portaal/wachtwoord-reset/'+u.id);toast('Resetmail verstuurd naar '+(u.email||u.name))}
+  catch(e){toast(e.message||'Versturen mislukt',true)}finally{btn.disabled=false}
+}
+async function removeUser(u){
+  if(!await askConfirm('Het account van '+(u.name||u.email)+' verwijderen? Diegene kan daarna niet meer inloggen. Gegevens in de apps blijven bewaard.','Verwijderen'))return;
+  try{await api('DELETE','/api/collections/users/records/'+u.id);users=users.filter(x=>x.id!==u.id);renderUsers();toast('Account verwijderd.')}
+  catch(e){toast('Verwijderen lukt niet.',true)}
+}
+$('userSearch').addEventListener('input',renderUsers);
+/* ---------- Testaccount (alleen host) ---------- */
+const TEST_KEY='vp_test_levels';
+function testLevels(){let v={};try{v=JSON.parse(localStorage.getItem(TEST_KEY)||'{}')||{}}catch(_){}return v}
+$('testOpen').addEventListener('click',()=>{
+  const saved=testLevels(),box=$('testApps');box.replaceChildren();
+  for(const app of SHARED_APPS()){const l=document.createElement('label');const sp=document.createElement('span');sp.textContent=app.name+(isFp(app)?' (testgegevens)':'');
+    const sel=document.createElement('select');sel.className='lvl-select';sel.name=app.key;sel.setAttribute('aria-label','Toegang van Johnny Test tot '+app.name);
+    for(const [lvl,label] of (isFp(app)?FP_LEVELS.filter(x=>x[0]!=='edit2'):isRt(app)?RT_LEVELS:LEVELS)){const o=document.createElement('option');o.value=lvl;o.textContent=label;sel.append(o)}
+    sel.value=saved[app.key]!=null?saved[app.key]:isRt(app)?'rol':'edit';l.append(sp,sel);box.append(l);
+    if(isRt(app)){ // rollen voor Johnny (standaard alle drie)
+      const rb=document.createElement('div');rb.className='rol-box';rb.id='testRollen';const keep=Array.isArray(saved.rt_rollen)?saved.rt_rollen:RT_ROLLEN.map(x=>x[0]);
+      for(const [k,lbl] of RT_ROLLEN){const c=document.createElement('label');const i=document.createElement('input');i.type='checkbox';i.value=k;i.checked=keep.includes(k);c.append(i,' '+lbl);rb.append(c)}
+      const sync=()=>{rb.hidden=sel.value!=='rol'};sel.addEventListener('change',sync);sync();box.append(rb)}
+    if(isFp(app)){ // afdelingen voor Johnny als leidinggevende (uit de testgegevens)
+      const ab=document.createElement('div');ab.className='rol-box';ab.id='testAfd';box.append(ab);
+      fpAfdelingen().then(A=>{const keep=Array.isArray(saved.fp_afdelingen)?saved.fp_afdelingen:A.test.slice(0,1);
+        if(!A.test.length){const p=document.createElement('small');p.textContent='Nog geen testgegevens: open eerst als Beheerder 1.';ab.append(p)}
+        for(const k of A.test){const c=document.createElement('label');const i=document.createElement('input');i.type='checkbox';i.value=k;i.checked=keep.includes(k);c.append(i,' '+k);ab.append(c)}});
+      const sync=()=>{ab.hidden=sel.value!=='afd'};sel.addEventListener('change',sync);sync()}}
+  $('testDialog').showModal();
+});
+$('testCancel').addEventListener('click',()=>$('testDialog').close());
+$('testForm').addEventListener('submit',e=>{
+  e.preventDefault();const body={};for(const sel of $('testApps').querySelectorAll('select'))body[sel.name]=sel.value;
+  body.rt_rollen=[...$('testApps').querySelectorAll('#testRollen input:checked')].map(i=>i.value);
+  body.fp_afdelingen=[...$('testApps').querySelectorAll('#testAfd input:checked')].map(i=>i.value);
+  try{localStorage.setItem(TEST_KEY,JSON.stringify(body))}catch(_){}
+  const w=window.open('testaccount.html','_blank');
+  if(!w){toast('Je browser blokkeert het nieuwe tabblad. Sta pop-ups toe voor het portaal.',true);return}
+  $('testDialog').close();
+  let result=null,ready=false;
+  const send=()=>{if(ready&&result)w.postMessage(result,location.origin)};
+  const onMsg=ev=>{if(ev.source!==w||ev.origin!==location.origin||!ev.data||ev.data.type!=='vp-test-ready')return;ready=true;send()};
+  window.addEventListener('message',onMsg);setTimeout(()=>window.removeEventListener('message',onMsg),30000);
+  api('POST','/api/portaal/testaccount',body)
+    .then(r=>{result={type:'vp-test-auth',auth:{token:r.token,record:r.record}};send();toast('Testaccount geopend in een nieuw tabblad.')})
+    .catch(err=>{result={type:'vp-test-auth',error:err.message||'Openen mislukt.'};send();toast(err.message||'Testaccount openen mislukt.',true)});
+});
+
+/* ---------- Aanmelden met een uitnodiging ---------- */
+const INV={token:'',email:''};
+async function loadInvite(raw){
+  const t=String(raw||'').replace(/^\//,'').replace(/[^A-Za-z0-9]/g,'');const box=$('regInvite');
+  INV.token='';INV.email='';$('regEmail').readOnly=false;box.classList.add('hidden');box.replaceChildren();
+  if(!t)return;
+  try{const r=await api('GET','/api/portaal/uitnodiging/'+t);INV.token=t;INV.email=r.email||'';
+    const s=document.createElement('strong');s.textContent='Je bent uitgenodigd'+(r.door?' door '+r.door:'');
+    const p=document.createElement('span');p.textContent='Na het bevestigen krijg je direct toegang tot: '+r.rechten+'.';
+    box.append(s,p);box.className='invite-info';
+    if(r.naam&&!$('regName').value)$('regName').value=r.naam;
+    if(r.email){$('regEmail').value=r.email;$('regEmail').readOnly=true}
+  }catch(e){const s=document.createElement('strong');s.textContent='Uitnodiging werkt niet';const p=document.createElement('span');p.textContent=e.message||'Vraag een nieuwe link aan.';box.append(s,p);box.className='invite-info';box.style.background='var(--warn-bg)';box.style.color='var(--warn)'}
+}
+
+/* ---------- Wachtwoord wijzigen ---------- */
+// Ook bereikbaar vanuit elke app (via "Uitloggen?" -> Wachtwoord wijzigen): /#/wachtwoord. Daarna terug naar waar je was.
+let pwOnly=false;
+function openPw(){if(auth.record.is_test){toast('Het testaccount heeft geen eigen wachtwoord.',true);pwDone();return}$('pwForm').reset();$('pwUser').value=auth.record.email||'';msg('pwMsg','');if(!$('pwDialog').open)$('pwDialog').showModal();setTimeout(()=>$('pwOld').focus(),30)}
+function pwDone(){if(!pwOnly)return;pwOnly=false;history.replaceState(null,'','index.html#/');showHome()}
+$('pwBtn').addEventListener('click',openPw);$('pwDialog').addEventListener('close',pwDone);
+$('pwCancel').addEventListener('click',()=>$('pwDialog').close());
+$('pwForm').addEventListener('submit',async e=>{e.preventDefault();msg('pwMsg','');
+  const oud=$('pwOld').value,nieuw=$('pwNew').value;
+  if(!oud)return msg('pwMsg','Vul je huidige wachtwoord in.');
+  if(nieuw.length<10)return msg('pwMsg','Kies een nieuw wachtwoord van minimaal 10 tekens.');
+  if(nieuw!==$('pwNew2').value)return msg('pwMsg','De nieuwe wachtwoorden zijn niet gelijk.');
+  const b=$('pwSubmit');b.disabled=true;
+  try{const r=await api('POST','/api/portaal/wachtwoord',{oud,nieuw});saveAuth({token:r.token,record:auth.record});$('pwDialog').close();toast('Wachtwoord gewijzigd. Op andere apparaten moet je opnieuw inloggen.')}
+  catch(err){msg('pwMsg',err.message||'Opslaan lukt niet. Probeer het opnieuw.')}finally{b.disabled=false}});
+
+/* ---------- Laatst ingelogd ---------- */
+function lastLoginText(u){const raw=String(u.last_login||'');if(!raw)return u.verified?'Nog nooit ingelogd':'Nog niet bevestigd en nooit ingelogd';
+  const t=new Date(raw.replace(' ','T').replace(/Z?$/,'Z'));if(isNaN(t))return '';
+  const tm=t.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}),day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate());
+  const diff=Math.round((day(new Date())-day(t))/864e5);
+  return 'Laatst ingelogd: '+(diff<=0?'vandaag '+tm:diff===1?'gisteren '+tm:diff<7?diff+' dagen geleden':t.toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:t.getFullYear()===new Date().getFullYear()?undefined:'numeric'}));}
+
+/* ---------- Uitnodigingen ---------- */
+let invites=[];
+const fmtDate=raw=>{const t=new Date(String(raw||'').replace(' ','T').replace(/Z?$/,'Z'));return isNaN(t)?'':t.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})};
+const invLink=i=>location.origin+'/#/aanmelden/'+i.token;
+function invRights(i){let r=i.rechten||{};if(typeof r==='string'){try{r=JSON.parse(r)}catch(_){r={}}}
+  return SHARED_APPS().filter(a=>r[a.key]).map(a=>a.name+': '+levelLabel(a,r[a.key])).join(' · ')||'geen apps'}
+async function loadInvites(){try{const r=await api('GET','/api/collections/uitnodigingen/records?perPage=200&sort=-created');invites=r.items||[];renderInvites()}catch(_){invites=[];renderInvites()}}
+function renderInvites(){const ul=$('invList');ul.replaceChildren();const now=new Date();
+  const list=invites.filter(i=>{const exp=new Date(String(i.verloopt||'').replace(' ','T').replace(/Z?$/,'Z'));return i.gebruikt_op||!(exp<now)}).slice(0,30);
+  for(const i of list){const li=document.createElement('li');if(i.gebruikt_op)li.className='used';
+    const m=document.createElement('div');m.className='inv-main';const s=document.createElement('strong');s.textContent=i.naam||i.email||'Uitnodiging (geen naam)';
+    const r=document.createElement('small');r.textContent=invRights(i);
+    const st=document.createElement('small');st.textContent=i.gebruikt_op?'Gebruikt door '+String(i.gebruikt_door||'').replace(/\s*\(.*$/,'')+' op '+fmtDate(i.gebruikt_op):(i.email?'Alleen voor '+i.email+' · ':'')+'Geldig tot '+fmtDate(i.verloopt)+' · gemaakt door '+String(i.door||'').replace(/\s*\(.*$/,'');
+    m.append(s,r,st);li.append(m);
+    if(!i.gebruikt_op){const a=document.createElement('div');a.className='inv-acts';
+      const c=document.createElement('button');c.type='button';c.className='act-btn';c.textContent='Kopieer link';c.onclick=()=>copyLink(invLink(i));
+      const d=document.createElement('button');d.type='button';d.className='icon-btn';d.textContent='Intrekken';d.onclick=async()=>{if(!await askConfirm('Uitnodiging voor '+(i.naam||i.email||'deze persoon')+' intrekken? De link werkt dan niet meer.','Intrekken'))return;
+        try{await api('DELETE','/api/collections/uitnodigingen/records/'+i.id);invites=invites.filter(x=>x.id!==i.id);renderInvites();toast('Uitnodiging ingetrokken.')}catch(_){toast('Intrekken lukt niet.',true)}};
+      a.append(c,d);li.append(a)}
+    ul.append(li)}
+}
+async function copyLink(v){try{await navigator.clipboard.writeText(v);toast('Link gekopieerd.')}catch(_){toast('Kopiëren lukt niet; selecteer de link handmatig.',true)}}
+$('inviteNew2').addEventListener('click',()=>$('inviteNew').click());
+$('inviteNew').addEventListener('click',()=>{
+  $('inviteForm').reset();msg('inviteMsg','');$('inviteFields').classList.remove('hidden');$('invResult').classList.add('hidden');$('inviteSubmit').classList.remove('hidden');$('inviteCancel').textContent='Annuleren';
+  const box=$('invApps');box.replaceChildren();
+  for(const app of SHARED_APPS()){const l=document.createElement('label');const sp=document.createElement('span');sp.textContent=app.name;
+    const sel=document.createElement('select');sel.className='lvl-select';sel.name=app.key;sel.setAttribute('aria-label','Toegang tot '+app.name);
+    for(const [lvl,label] of levelsFor(app).filter(x=>x[0]!=='rol'&&x[0]!=='afd')){const o=document.createElement('option');o.value=lvl;o.textContent=label;sel.append(o)}
+    sel.value='';sel.dataset.level='';sel.onchange=()=>sel.dataset.level=sel.value;l.append(sp,sel);box.append(l)}
+  $('inviteDialog').showModal();setTimeout(()=>$('invNaam').focus(),30)});
+$('inviteCancel').addEventListener('click',()=>$('inviteDialog').close());
+$('invResultCopy').addEventListener('click',()=>copyLink($('invResultLink').value));
+$('inviteForm').addEventListener('submit',async e=>{e.preventDefault();msg('inviteMsg','');
+  const rechten={};for(const sel of $('invApps').querySelectorAll('select'))if(sel.value)rechten[sel.name]=sel.value;
+  if(!Object.keys(rechten).length)return msg('inviteMsg','Kies voor minstens één app welke toegang iemand krijgt.');
+  const em=email($('invEmail').value);if(em&&!isWorkMail(em))return msg('inviteMsg','Vul een werkmail in (eindigt op @voorbeeld.nl) of laat het leeg.');
+  const b=$('inviteSubmit');b.disabled=true;
+  try{const r=await api('POST','/api/collections/uitnodigingen/records',{naam:$('invNaam').value.trim(),email:em,rechten});
+    invites.unshift(r);renderInvites();
+    $('inviteFields').classList.add('hidden');$('inviteSubmit').classList.add('hidden');$('inviteCancel').textContent='Klaar';
+    $('invResultMsg').textContent='Uitnodiging gemaakt'+(r.naam?' voor '+r.naam:'')+'. Stuur deze link door (14 dagen geldig, werkt één keer):';
+    $('invResultLink').value=invLink(r);$('invResult').classList.remove('hidden');$('invResultLink').select();
+  }catch(err){msg('inviteMsg',err.message||'Maken lukt niet.')}finally{b.disabled=false}});
+
+/* ---------- Logboek (alleen host) ---------- */
+const LOG={page:1,items:[],more:false};
+const fmtDT=raw=>{const t=new Date(String(raw||'').replace(' ','T').replace(/Z?$/,'Z'));return isNaN(t)?'':t.toLocaleString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})};
+const SOORT={inloggen:'Inloggen',toegang:'Toegang',account:'Account',uitnodiging:'Uitnodiging',retour:'Retour'};
+async function loadLog(reset){if(!auth.record.isHost)return;if(reset){LOG.page=1;LOG.items=[]}
+  const f=[];const so=$('logSoort').value,q=$('logZoek').value.trim().replace(/["\\]/g,'');
+  if(so)f.push('soort="'+so+'"');if(q)f.push('(actie~"'+q+'"||wie~"'+q+'"||details~"'+q+'")');
+  try{const r=await api('GET','/api/collections/logboek/records?perPage=50&sort=-created&page='+LOG.page+(f.length?'&filter='+encodeURIComponent(f.join('&&')):''));
+    LOG.items=LOG.items.concat(r.items||[]);LOG.more=r.page<r.totalPages;renderLog()}catch(_){toast('Logboek laden lukt niet.',true)}}
+function renderLog(){const tb=$('logBody');tb.replaceChildren();
+  for(const l of LOG.items){const tr=document.createElement('tr');
+    const t=document.createElement('td');t.className='t';t.textContent=fmtDT(l.created);
+    const k=document.createElement('td');k.style.width='1%';const sp=document.createElement('span');sp.className='soort '+(l.soort||'');sp.textContent=SOORT[l.soort]||l.soort||'';k.append(sp);
+    const a=document.createElement('td');a.textContent=l.actie||'';if(l.details){const sm=document.createElement('small');sm.textContent=l.details;a.append(sm)}
+    const w=document.createElement('td');const ws=document.createElement('small');ws.textContent=l.wie||'';w.append(ws);
+    tr.append(t,k,a,w);tb.append(tr)}
+  $('logEmpty').classList.toggle('hidden',LOG.items.length>0);$('logMore').classList.toggle('hidden',!LOG.more)}
+let logTimer=null;
+$('logSoort').addEventListener('change',()=>loadLog(true));
+$('logZoek').addEventListener('input',()=>{clearTimeout(logTimer);logTimer=setTimeout(()=>loadLog(true),300)});
+$('logMore').addEventListener('click',()=>{LOG.page++;loadLog(false)});
+$('copyInvite').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText($('inviteLink').value);toast('Link gekopieerd.')}
+  catch(_){$('inviteLink').select();toast('Selecteer en kopieer de link handmatig.')}
+});
+route();
+})();
+</script>
+<script>(function(){var APP='portaal',NAME='het portaal',BUILD='9518c0fe25';
+function check(){fetch('/versie.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var a=j.apps&&j.apps[APP];if(!a||a.build===BUILD||document.getElementById('vpUpdate'))return;
+var d=document.createElement('div');d.id='vpUpdate';d.setAttribute('role','status');
+d.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:3000;background:#202635;color:#fff;padding:12px 14px 12px 18px;border-radius:12px;box-shadow:0 10px 40px #0004;font:600 13px/1.4 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif;display:flex;gap:14px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)';
+var t=document.createElement('span');t.textContent='Er staat een nieuwe versie van '+NAME+' online (versie '+a.versie+').';
+var b=document.createElement('button');b.type='button';b.textContent='Nu bijwerken';b.style.cssText='border:0;border-radius:8px;padding:8px 12px;background:#e50071;color:#fff;font:inherit;cursor:pointer';b.onclick=function(){location.reload()};
+d.appendChild(t);d.appendChild(b);document.body.appendChild(d)}).catch(function(){})}
+check();setInterval(check,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)check()})})();</script></body>
+</html>

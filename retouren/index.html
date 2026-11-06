@@ -1,0 +1,848 @@
+<!doctype html><html lang="nl"><head><script src="../demo/mock-api.js"></script><script>(function(){try{if(sessionStorage.getItem('vp_tab_auth')!=='1')return}catch(_){return}
+var P=Storage.prototype,g=P.getItem,s=P.setItem,r=P.removeItem,L=window.localStorage,K='vp_auth';
+P.getItem=function(k){return this===L&&k===K?g.call(sessionStorage,k):g.call(this,k)};
+P.setItem=function(k,v){return this===L&&k===K?s.call(sessionStorage,k,v):s.call(this,k,v)};
+P.removeItem=function(k){return this===L&&k===K?r.call(sessionStorage,k):r.call(this,k)};
+document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.id='vpTestBar';b.setAttribute('role','status');
+b.style.cssText='position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:5000;background:#f59e0b;color:#1f1300;font:700 12px/1.4 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif;padding:5px 14px;border-radius:0 0 10px 10px;box-shadow:0 4px 14px #0002;pointer-events:none;white-space:nowrap';
+b.textContent='Testaccount Johnny Test – alleen dit tabblad';document.body.appendChild(b)})})();</script><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" type="image/png" href="../favicon.png"><link rel="apple-touch-icon" href="../icon-180.png"><meta name="theme-color" content="#d60c52"><meta name="apple-mobile-web-app-title" content="Portaal"><meta name="mobile-web-app-capable" content="yes"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Retouren</title>
+<style>
+:root{
+  --bg:#f7f8fa;--surface:#fff;--sunk:#f6f7f9;--line:#e8eaf0;--fg:#202635;--muted:#697386;--faint:#98a0ac;
+  --brand:#e50071;--brand-dark:#b90059;--pink-soft:#fff0f7;--navy:#252e42;
+  --warn:#9a5b00;--warn-bg:#fff2dc;--ok:#1e8a1c;--ok-bg:#e3f5e2;--bad:#c10a4a;--bad-bg:#fde7ef;--info:#2357b5;--info-bg:#e8effc;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.app-sidebar{position:fixed;inset:0 auto 0 0;width:244px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:20}
+.brand{display:block;padding:30px 23px 28px;border-bottom:1px solid var(--line);text-decoration:none}
+.brand img{display:block;width:198px;max-width:100%;height:auto}
+.brand-sub{font-size:10px;letter-spacing:1.65px;color:#89909f;margin-top:13px;font-weight:800}
+.sidebar-caption{font-size:10px;letter-spacing:1.5px;color:#98a0ac;font-weight:800;margin:27px 23px 11px}
+.side-nav{display:flex;flex-direction:column;gap:5px;padding:0 12px}
+.tab{display:flex;align-items:center;gap:12px;text-decoration:none;color:#515b6b;border-radius:9px;font-size:13px;font-weight:700;padding:13px 14px}
+.tab .ic{font-size:17px;width:18px;text-align:center}
+.tab:hover{background:#f5f6f9;color:var(--brand)}
+button.tab{font:inherit;font-size:13px;font-weight:700;border:0;background:transparent;cursor:pointer;text-align:left;width:100%}
+.tab-new{color:var(--brand)}.tab-new:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.tab[aria-current="page"]{background:var(--pink-soft);color:#c50060}
+.tab .count{margin-left:auto;background:var(--bad);color:#fff;border-radius:20px;font-size:11px;padding:1px 8px}
+.sidebar-foot{margin-top:auto;padding:18px 20px;border-top:1px solid var(--line);display:flex;align-items:center;gap:11px;font-size:12px}
+.sidebar-foot small{display:block;color:#89909f;margin-top:3px}
+.avatar{background:var(--pink-soft);color:var(--brand);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.app-content{margin-left:244px;min-width:0}
+.app-topbar{min-height:94px;background:#fff;border-bottom:1px solid var(--line);padding:20px 34px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.app-topbar h1{font-size:21px;font-weight:750;letter-spacing:-.5px;margin:0 0 5px}
+.app-topbar p{margin:0;font-size:12px;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.portal-btn{font-size:12px;font-weight:700;border:0;border-radius:8px;padding:8px 12px;background:#f3f5f8;color:#4a5362;cursor:pointer;text-decoration:none}
+.portal-btn:hover{filter:brightness(.97)}
+.version-label{font-size:10px;letter-spacing:1px;font-weight:800;background:var(--pink-soft);color:#b90059;border-radius:20px;padding:9px 13px;white-space:nowrap}
+.mode-switch{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px 6px 6px;font-size:12px;font-weight:700;color:#4a5362;cursor:pointer}
+.mode-switch .knob{width:30px;height:18px;border-radius:10px;background:#d9dde5;position:relative;transition:background .15s}
+.mode-switch .knob::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
+.mode-switch[aria-checked="true"]{background:#fff0d5;border-color:#eedcb2;color:#6d4300}
+.mode-switch[aria-checked="true"] .knob{background:#e08a00}.mode-switch[aria-checked="true"] .knob::after{left:14px}
+.mode-switch:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.readonly-banner{background:#fff0d5;color:#815000;border:1px solid #eedcb2;border-radius:10px;padding:12px 16px;font-size:13px}
+.wrap{max-width:1200px;margin:0 auto;padding:26px 34px 60px;display:flex;flex-direction:column;gap:22px}
+.test-banner{background:#fff0d5;color:#6d4300;border:1px solid #eedcb2;border-radius:10px;padding:12px 16px;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.test-banner b{font-weight:800}
+.new-test{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;font-weight:700;color:#6d4300;background:#fff0d5;border:1px solid #eedcb2;border-radius:8px;padding:7px 10px;cursor:pointer}.new-test input{width:auto;margin:0}
+h2{font-size:17px;font-weight:750;letter-spacing:-.25px;margin:0}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px #1c273309}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.stat{padding:16px 18px;display:flex;flex-direction:column;gap:2px}
+.stat span{font-size:12px;color:var(--muted)}.stat b{font-size:26px;font-weight:750;letter-spacing:-.5px}
+.stat.alert b{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
+.card{padding:18px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.card-head small{color:var(--muted);font-size:12px}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:13px}
+.bar .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .track{background:#f1f2f6;border-radius:6px;height:12px;overflow:hidden}
+.bar .fill{background:var(--brand);height:100%;border-radius:6px}
+.bar .n{text-align:right;font-weight:700}
+svg text{font-family:var(--sans)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
+.pill::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-aangemeld{background:var(--info-bg);color:var(--info)}
+.st-ontvangen{background:var(--warn-bg);color:var(--warn)}
+.st-gecontroleerd{background:#f0e9fb;color:#6b3fb5}
+.st-terugbetaald{background:var(--ok-bg);color:var(--ok)}
+.st-afgekeurd{background:#eef0f4;color:#5b6474}
+.late{color:var(--bad);font-weight:700}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar input[type=search]{flex:1;min-width:220px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff}
+.toolbar select{border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:700;color:#4a5362;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip .c{opacity:.7;margin-left:4px;font-weight:600}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer;background:#f3f5f8;color:#2f3747;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--brand);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#fbfbfd}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer}tbody tr:hover{background:#fcf6f9}
+tbody tr:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+td small{display:block;color:var(--muted);font-size:12px}
+.prod{max-width:300px;white-space:pre-line;font-size:13px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.late-list{display:flex;flex-direction:column}
+.late-list button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.late-list button:last-child{border-bottom:0}
+.late-list button:hover b{color:var(--brand)}
+.late-list button:focus-visible{outline:2px solid var(--brand)}
+/* detailpaneel */
+.drawer-bg{position:fixed;inset:0;background:#20263555;z-index:50}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:#fff;z-index:51;box-shadow:-10px 0 40px #0002;display:flex;flex-direction:column}
+.drawer-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.drawer-head h2{font-size:19px}
+.drawer-body{padding:20px 24px;overflow:auto;display:flex;flex-direction:column;gap:20px}
+.x{border:0;background:#f3f5f8;border-radius:8px;width:34px;height:34px;font-size:18px;cursor:pointer}
+dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 14px;margin:0;font-size:13.5px}
+dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}
+.section-title{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:8px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;font-size:12.5px;font-weight:700;cursor:pointer}
+.steps button[aria-pressed="true"]{border-color:currentColor}
+textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;resize:vertical}
+.drawer select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.timeline li{display:flex;gap:10px;align-items:baseline}
+.timeline time{color:var(--muted);font-size:12px;min-width:118px}
+.hist-del{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;padding:2px 6px;border-radius:6px}
+.hist-del:hover,.hist-del[data-armed="1"]{color:var(--bad);background:var(--bad-bg)}
+.hist-del.all{margin-left:0;text-transform:none;letter-spacing:0}
+.pdf-viewer{position:fixed;inset:0;background:#20263588;z-index:70;display:flex;align-items:center;justify-content:center;padding:24px}
+.pdf-box{background:#fff;border-radius:14px;width:min(980px,100%);height:min(92vh,1200px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px #0004}
+.pdf-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pdf-head h2{font-size:16px}.pdf-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pdf-box iframe{flex:1;width:100%;border:0;background:#f1f2f6}
+@media(max-width:800px){.pdf-viewer{padding:0}.pdf-box{height:100%;border-radius:0}}
+/* breed scherm: retourformulier opent naast het detailpaneel, de retour blijft bruikbaar */
+@media(min-width:1100px){
+  .pdf-viewer{inset:0 min(560px,100vw) 0 auto;width:min(820px,calc(100vw - 560px));padding:0;background:transparent;z-index:52;display:block}
+  .pdf-box{width:100%;height:100%;border-radius:0;box-shadow:-10px 0 40px #0002;border-right:1px solid var(--line)}
+}
+.rf{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:#fff;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.rf-title{font-size:20px;font-weight:800;color:var(--brand);letter-spacing:-.3px;margin-bottom:4px}
+.rf-sub{font-weight:700;margin-top:10px}
+.rf-row{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.rf-row span{color:#4a5362}.rf-row b{font-weight:600;overflow-wrap:anywhere;white-space:pre-line}
+.rf-nr b{font-size:15px}
+.rf-block{white-space:pre-line;background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.rf-reden{margin-top:8px}
+.rf-form .rf-in{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;align-items:center}
+.rf-form .rf-stack{grid-template-columns:minmax(0,1fr);gap:5px;margin-top:6px}
+.rf-lbl{font-weight:600;color:#4a5362}
+.rf-form input,.rf-form textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;color:var(--fg);width:100%}
+.rf-form textarea{min-height:90px}
+.rf-nrin{display:grid;grid-template-columns:190px minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
+@media(max-width:800px){.rf-form .rf-in{grid-template-columns:minmax(0,1fr);gap:4px}.rf-nrin{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.rf-nrin .rf-lbl{grid-column:1/-1}}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.form-grid label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:700;color:#4a5362}
+.form-grid .full{grid-column:1/-1}
+.form-grid input,.form-grid textarea,.form-grid select{font:inherit;font-weight:400;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;color:var(--fg)}
+.form-grid textarea{min-height:90px}
+.form-hint{font-size:12px;color:var(--muted);font-weight:400}
+.form-err{background:var(--bad-bg);color:var(--bad);border-radius:8px;padding:10px 12px;font-size:13px}
+.form-err:empty{display:none}
+tbody tr.fresh{animation:fresh 4s ease-out}
+.rf-nrin.lk{grid-template-columns:auto minmax(110px,1fr) auto minmax(90px,1fr) auto}
+@media(max-width:800px){.rf-nrin.lk{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.rf-nrin.lk .btn{grid-column:1/-1}}
+.lk-msg{font-size:13px;border-radius:8px;padding:9px 12px;background:#f1f2f6;color:#4a5362}.lk-msg:empty{display:none}
+.lk-msg.warn{background:#fff5e6;color:#8a5300}.lk-msg.bad{background:var(--bad-bg);color:var(--bad)}.lk-msg.ok{background:#eaf7ef;color:#1e6b3a}
+.lk-items{display:flex;flex-direction:column;gap:6px}.lk-items:empty{display:none}
+.lk-item{display:grid;grid-template-columns:auto 64px minmax(0,1fr);gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;font-size:13.5px}
+.lk-item.off{opacity:.55}.lk-item input[type=number]{width:64px;padding:6px 8px}.lk-item small{display:block;color:var(--muted);font-size:12px}
+.mailrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mailrow .mailbox{position:relative;flex:1;min-width:220px}
+.mailrow input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:9px 34px 9px 11px}
+.mailrow .clr{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;font-size:18px;line-height:1;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px}.mailrow .clr:hover{background:#f1f2f6;color:var(--fg)}
+.hist-actie{font-weight:700;color:#4a5362}
+#reasonBars .bar{cursor:pointer;border-radius:6px}#reasonBars .bar:hover,#reasonBars .bar:focus-visible{background:#fcf6f9;outline:none}
+tbody tr.wk-head{cursor:default;background:#f6f7fa}tbody tr.wk-head:hover{background:#f6f7fa}
+tr.wk-head td{padding:8px 14px;font-size:12px;font-weight:800;color:#4a5362;letter-spacing:.02em}
+tr.wk-head td span{font-weight:600;color:var(--muted);margin-left:6px}tr.wk-head td b{float:right;color:var(--muted);font-weight:700}
+.pdf-msg{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#4a5362;background:#f1f2f6}
+@keyframes fresh{0%,40%{background:#fff0f7}100%{background:transparent}}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--faint);margin-right:6px;vertical-align:middle}
+.live-dot.on{background:var(--ok)}
+@media(max-width:800px){.form-grid{grid-template-columns:minmax(0,1fr)}}
+.danger-zone{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.btn.danger{background:#fff;color:var(--bad);border:1px solid #ecd0d7}.btn.danger[data-armed="1"]{background:var(--bad);color:#fff;border-color:var(--bad)}
+.nr-table{width:100%;border-collapse:collapse}.nr-table th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.nr-table td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}.nr-table tbody tr{cursor:pointer}.nr-table tbody tr:hover{background:#fcf6f9}
+.nr-table td small{display:block;color:var(--muted);font-size:12px}
+#nrCard.nr-alert{border-color:#f3c3d3;box-shadow:inset 4px 0 0 var(--bad)}
+.saved{font-size:12px;color:var(--ok);font-weight:700}
+.copy{border:1px solid var(--line);background:#fff;border-radius:6px;font-family:inherit;font-weight:700;font-size:11px;line-height:1.4;padding:2px 7px;margin-left:6px;cursor:pointer;color:var(--muted);vertical-align:middle}.copy:hover{color:var(--brand);border-color:var(--brand)}
+.dnav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}.dnav button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-family:inherit;font-weight:700;font-size:12px;line-height:1.4;cursor:pointer;color:#4a5362}.dnav button:disabled{opacity:.4;cursor:default}.dnav .pos{font-size:12px;color:var(--muted)}
+.keys{font-size:11.5px;color:var(--faint);margin:0}.keys kbd{font:inherit;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:#fff;color:var(--muted)}
+.toast-act{margin-left:12px;border:0;border-radius:7px;background:#fff;color:var(--navy);font:inherit;padding:4px 10px;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:600;z-index:60}
+.blocked{max-width:460px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px;text-align:center}
+.blocked a{color:var(--brand-dark);font-weight:700}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:800px){
+  .app-sidebar{position:relative;width:100%;height:auto}.brand{padding:16px 20px}.brand img{width:160px}
+  .sidebar-caption,.sidebar-foot{display:none}
+  .side-nav{flex-direction:row;overflow-x:auto;padding:10px 12px}.tab{white-space:nowrap;flex-shrink:0}button.tab{width:auto}
+  .app-content{margin-left:0}.app-topbar{min-height:0;padding:18px 20px}.wrap{padding:18px 16px 50px}
+  .hide-m{display:none}.prod{max-width:none}
+  dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:6px}
+}
+</style><script>(function(){try{var a=JSON.parse(localStorage.getItem('vp_auth')||'null'),p=a&&a.record&&a.record.startpagina,t=p&&p.thema;if(t==='donker'||(t!=='licht'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('vp-donker')}catch(_){}})();</script><style>/* Demo Portaal – gedeelde stijl (roze kop, licht/donker). Wordt door build.py in elke app gezet. */
+@font-face{font-family:'Inter';src:url(../fonts/inter.woff2) format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Bricolage';src:url(../fonts/bricolage-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Bricolage';src:url(../fonts/bricolage-800.woff2) format('woff2');font-weight:800;font-display:swap}
+:root{--vp-band:#e50071;--vp-band2:#b90059;--vp-bg:#f7f8fa;--vp-card:#fff;--vp-line:#e8eaf0;--vp-ink:#202635;--vp-sub:#697386;
+  --vp-shadow:0 1px 0 #e8eaf0,0 18px 40px -30px rgba(32,38,53,.5);--vp-glass:rgba(255,255,255,.16);--vp-glass-h:rgba(255,255,255,.26)}
+html.vp-donker{--vp-band:#6b0036;--vp-band2:#4a0026;--vp-bg:#12141c;--vp-card:#1b1e2a;--vp-line:#2b2f3f;--vp-ink:#eef0f5;--vp-sub:#a2a9ba;
+  --vp-shadow:0 1px 0 #2b2f3f,0 18px 40px -30px rgba(0,0,0,.8);--vp-glass:rgba(255,255,255,.1);--vp-glass-h:rgba(255,255,255,.18);color-scheme:dark}
+html.vp-donker,html.vp-donker body{background:var(--vp-bg)!important}
+
+/* ---------- kop ---------- */
+body.vp-shell .app-sidebar{display:none!important}
+body.vp-shell .app-content{margin-left:0!important;min-height:100vh}
+body.vp-shell{--vp-pad:max(24px,calc((100% - 1200px) / 2 + 34px))}
+body.vp-shell .app-topbar{position:relative;overflow:hidden;display:block!important;min-height:0!important;background:var(--vp-band)!important;color:#fff!important;border:0!important;padding:16px var(--vp-pad) 74px!important;box-shadow:none!important;height:auto!important}
+body.vp-shell .app-topbar::after{content:'';position:absolute;right:-140px;top:-240px;width:600px;height:600px;border-radius:50%;background:var(--vp-band2);opacity:.45;pointer-events:none}
+body.vp-shell .app-topbar>*{position:relative;z-index:1}
+.vp-row1{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vp-row1 .brand{display:flex!important;align-items:center;padding:0!important;border:0!important;background:none!important;margin:0!important}
+.vp-row1 .brand img,.vp-row1 .brand .brand-logo{width:160px!important;max-width:none!important;flex:none;height:auto!important;display:block;margin:0!important;filter:none!important}
+.vp-row1 .brand a{display:block}
+.vp-row1 .brand-sub{display:none!important}
+.vp-row1 .brand:focus-visible,.vp-row1 .brand a:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:6px}
+.vp-crumb{font:600 14px Inter,sans-serif;color:#ffd6e8;white-space:nowrap}.vp-crumb b{color:#fff;font-weight:700;margin-left:8px}
+.vp-right{margin-left:auto;display:flex!important;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.vp-right .portal-btn,.vp-right .mode-switch,.vp-right button,.vp-right a.btn,.vp-themabtn{background:var(--vp-glass)!important;color:#fff!important;border:0!important;border-radius:999px!important;height:36px;padding:0 15px!important;font:600 13px Inter,sans-serif!important;display:inline-flex!important;align-items:center;gap:7px;text-decoration:none!important;cursor:pointer;box-shadow:none!important;white-space:nowrap}
+.vp-right .portal-btn:hover,.vp-right button:hover,.vp-themabtn:hover{background:var(--vp-glass-h)!important;filter:none!important}
+.vp-right .portal-btn:focus-visible,.vp-right button:focus-visible,.vp-themabtn:focus-visible{outline:2px solid #fff!important;outline-offset:2px}
+.vp-right .mode-switch{padding:0 14px 0 8px!important}
+.vp-right .mode-switch .knob{background:rgba(255,255,255,.35)!important}
+.vp-right .mode-switch[aria-checked="true"]{background:#fff0d5!important;color:#6d4300!important}
+.vp-right .mode-switch[aria-checked="true"] .knob{background:#e08a00!important}
+.vp-right .hidden,.vp-right [hidden],.vp-right .lab-label{display:none!important}
+.vp-right .status,.vp-right .sync-status,.vp-right .saved{color:#ffe7f2!important;font-size:12px}
+.vp-right .status *{color:inherit!important}
+.vp-right .sidebar-foot{margin:0 0 0 6px!important;padding:0 14px 0 0!important;border:0!important;background:none!important;color:#fff!important;display:flex!important;align-items:center;gap:10px;border-radius:999px;font-size:13px;height:40px}
+.vp-right .sidebar-foot strong{color:#fff!important;font-size:13px;display:block}
+.vp-right .sidebar-foot small{color:#ffd6e8!important;font-size:11.5px;margin-top:0!important}
+.vp-right .sidebar-foot .avatar{background:#fff!important;color:#b90059!important;width:36px!important;height:36px!important;font-size:13px}
+.vp-right .sidebar-foot.vp-logout:hover,.vp-right .sidebar-foot.vp-logout:focus-visible{background:var(--vp-glass)!important;outline:none}
+.vp-right .sidebar-foot .vp-lo-hint{color:#fff!important}
+.vp-title{margin-top:30px}
+.vp-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vp-title h1{font:800 44px/1.05 Bricolage,Inter,sans-serif!important;letter-spacing:-.035em!important;color:#fff!important;margin:0!important;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vp-title p{color:#ffe7f2!important;font-size:15px!important;margin:10px 0 0!important;max-width:720px}
+.vp-title p *{color:inherit}
+.vp-title .version-label{background:#fff!important;color:#b90059!important;font:700 12.5px Inter,sans-serif!important;letter-spacing:0!important;border-radius:999px;padding:5px 11px!important}
+.vp-tabs{display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:6px!important;margin:24px 0 0!important;padding:0!important;background:none!important;border:0!important}
+.vp-tabs>*{height:38px;padding:0 16px!important;border-radius:999px!important;display:inline-flex!important;align-items:center;gap:8px;font:600 13.5px Inter,sans-serif!important;color:#ffe7f2!important;background:transparent!important;border:0!important;text-decoration:none!important;width:auto!important;margin:0!important;cursor:pointer;box-shadow:none!important}
+.vp-tabs>*:hover{background:var(--vp-glass)!important;color:#fff!important}
+.vp-tabs>*:focus-visible{outline:2px solid #fff!important;outline-offset:2px}
+.vp-tabs>[aria-current="page"],.vp-tabs>[aria-selected="true"],.vp-tabs>.active,.vp-tabs.fp>button:not(.secondary){background:#fff!important;color:#b90059!important}
+html.vp-donker .vp-tabs>[aria-current="page"],html.vp-donker .vp-tabs>[aria-selected="true"],html.vp-donker .vp-tabs>.active,html.vp-donker .vp-tabs.fp>button:not(.secondary){background:var(--vp-bg)!important;color:#fff!important}
+.vp-tabs .ic{font-size:15px;width:auto!important}
+.vp-tabs .count{background:#fff!important;color:#b90059!important;border-radius:999px;font-size:11.5px;padding:1px 7px;margin-left:2px}
+.vp-tabs>[aria-current="page"] .count,.vp-tabs>[aria-selected="true"] .count{background:#e50071!important;color:#fff!important}
+.vp-tabs .tab-new{color:#fff!important}
+/* inhoud schuift over de kop heen */
+body.vp-shell .app-content>main,body.vp-shell .app-content>.wrap,body.vp-shell .app-content>#app{position:relative;z-index:2;margin-top:-46px!important}
+body.vp-shell .panel,body.vp-fp .app-content main section,body.vp-shell .app-content main .card{border:0!important;border-radius:18px!important;box-shadow:var(--vp-shadow)!important}
+body.vp-shell .stat b,body.vp-shell .big{font-family:Bricolage,Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+body.vp-shell h2{font-family:Bricolage,Inter,sans-serif;letter-spacing:-.01em}
+body.vp-shell{font-family:Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif}
+.vp-themabtn .vp-ti{font-size:14px}
+@media (max-width:760px){
+  body.vp-shell .app-topbar{padding:12px 16px 66px!important}
+  .vp-row1 .brand img,.vp-row1 .brand .brand-logo{width:120px!important}
+  .vp-crumb,.vp-right .sidebar-foot div,.vp-themabtn .vp-tt{display:none!important}
+  .vp-right .sidebar-foot{padding:0!important}
+  .vp-title{margin-top:20px}.vp-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vp-title h1{font-size:26px!important;overflow-wrap:anywhere}.vp-title p{font-size:13.5px!important}
+  .vp-tabs{flex-wrap:nowrap;overflow-x:auto;margin-top:16px!important;scrollbar-width:none}.vp-tabs>*{flex:none}
+  body.vp-shell .app-content>main,body.vp-shell .app-content>.wrap,body.vp-shell .app-content>#app{margin-top:-40px!important}
+}
+@media print{body.vp-shell .app-topbar{display:none!important}body.vp-shell .app-content>main,body.vp-shell .app-content>.wrap{margin-top:0!important}}
+/* donker: kleuren in de inhoud worden door thema.js omgezet; dit zijn de vaste plekken */
+html.vp-donker body.vp-shell .panel,html.vp-donker body.vp-shell .app-content main .card,html.vp-donker body.vp-fp .app-content main section{background:var(--vp-card)!important}
+html.vp-donker ::placeholder{color:#7d8496}
+html.vp-donker img.vp-keep{filter:none}
+</style></head><body>
+<aside class="app-sidebar">
+  <a class="brand" href="../index.html" title="Naar de startpagina met apps"><img src="../logo.png" alt="Demo Portaal – naar de startpagina"><div class="brand-sub">RETOUREN</div></a>
+  <div class="sidebar-caption">WERKRUIMTE</div>
+  <nav class="side-nav" aria-label="Retouren">
+    <a class="tab" id="nav-overzicht" href="#overzicht"><span class="ic" aria-hidden="true">▤</span>Overzicht</a>
+    <a class="tab" id="nav-retouren" href="#retouren"><span class="ic" aria-hidden="true">↩</span>Alle retouren<span class="count" id="navLate" hidden></span></a>
+    <button class="tab tab-new" type="button" id="newBtn" hidden><span class="ic" aria-hidden="true">＋</span>Retour aanmaken</button>
+  </nav>
+  <div class="sidebar-foot"><span class="avatar" id="userAvatar">?</span><div><strong id="userName">Laden…</strong><small id="userRole"></small></div></div>
+</aside>
+<div class="app-content">
+  <header class="app-topbar">
+    <div><h1 id="pageTitle">Retouren</h1><p id="pageSub"><span class="live-dot" id="liveDot" aria-hidden="true"></span><span id="liveText">Verbinden…</span> · Alle retouraanvragen die via de chatbot binnenkomen, met status en cijfers.</p></div>
+    <div class="topbar-right"><a class="portal-btn" href="../index.html">Naar portaal</a><button type="button" class="mode-switch" id="modeSwitch" role="switch" aria-checked="false" hidden><span class="knob" aria-hidden="true"></span>Testgegevens</button><span class="version-label">VERSIE 3.4</span></div>
+  </header>
+  <main class="wrap" id="app">
+    <div class="test-banner" id="testBanner" role="note" hidden><b>Testgegevens</b> <span><span id="testBannerText">Je kijkt naar verzonnen retouren. Alleen jij en het testaccount zien deze; wijzigingen hier raken de echte retouren niet.</span></span><button class="btn" type="button" id="reseedBtn" style="margin-left:auto">Testgegevens opnieuw vullen</button></div>
+    <div class="readonly-banner" id="roBanner" role="note" hidden>Je kunt de retouren bekijken, maar niet wijzigen. Vraag je beheerder om "Alles gebruiken" als je dat wel nodig hebt.</div>
+
+    <section id="page-overzicht" aria-labelledby="nav-overzicht">
+      <div class="stats" id="stats"></div>
+      <div class="panel card" id="nrCard" style="margin-top:14px"><div class="card-head"><h2>Nog niet ontvangen</h2><small>aangemeld, maar na 14 dagen nog niet binnen · oudste eerst</small></div><div id="nrList"></div></div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="panel card"><div class="card-head"><h2>Retouren per week</h2><small>kalenderweken (ma t/m zo)</small></div><div id="weekChart"></div></div>
+        <div class="panel card"><div class="card-head"><h2>Te lang open</h2><small id="lateHint"></small></div><div class="late-list" id="lateList"></div></div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="panel card"><div class="card-head"><h2>Redenen</h2><small id="periodHint">deze week + 7 weken ervoor</small></div><div class="bars" id="reasonBars"></div></div>
+        <div class="panel card"><div class="card-head"><h2>Vaakst retour</h2><small>aantal stuks, deze week + 7 weken ervoor</small></div><div class="bars" id="productBars"></div></div>
+      </div>
+    </section>
+
+    <section id="page-retouren" aria-labelledby="nav-retouren" hidden>
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Zoek op ordernummer, naam, e-mail of product" aria-label="Zoek retouren">
+        <select id="period" aria-label="Periode"><option value="">Alle periodes</option><option value="w0">Deze week</option><option value="w1">Vorige week</option><option value="w4">Laatste 4 weken</option><option value="m0">Deze maand</option><option value="m1">Vorige maand</option><option value="m3">Laatste 3 maanden</option></select>
+        <select id="reden" aria-label="Reden van retour"><option value="">Alle redenen</option></select>
+        <button class="btn" type="button" id="exportBtn">⤓ Exporteren (Excel)</button>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Filter op status" style="margin-top:12px"></div>
+      <div class="panel" style="margin-top:14px;overflow:auto">
+        <table><thead><tr><th>Aangemeld</th><th>Order</th><th>Klant</th><th class="hide-m">Producten</th><th class="hide-m">Reden</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+        <div class="empty" id="empty" hidden>Geen retouren gevonden.</div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="drawer-bg" id="drawerBg" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" hidden></aside>
+<div class="pdf-viewer" id="pdfViewer" role="dialog" aria-modal="true" aria-labelledby="pdfTitle" hidden>
+  <div class="pdf-box">
+    <div class="pdf-head"><h2 id="pdfTitle">Retourformulier</h2><div class="pdf-actions"><a class="btn" id="pdfDownload" href="#" download>⤓ Downloaden</a><a class="btn" id="pdfTab" href="#" target="_blank" rel="noopener">Openen in nieuw tabblad</a><button class="x" type="button" id="pdfClose" aria-label="PDF sluiten">×</button></div></div>
+    <iframe id="pdfFrame" title="Retourformulier (PDF)" src="about:blank" allow="fullscreen"></iframe><div class="pdf-msg" id="pdfMsg" role="status" hidden></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const STATUS=[['aangemeld','Aangemeld'],['ontvangen','Ontvangen'],['gecontroleerd','Gecontroleerd'],['terugbetaald','Terugbetaald'],['afgekeurd','Afgekeurd']];
+const SL=Object.fromEntries(STATUS);
+const OPEN=s=>s!=='terugbetaald'&&s!=='afgekeurd';
+const CATS=['Kleur wijkt af','Beschadigd','Verkeerd besteld','Verkeerd product','Te veel besteld','Bedacht','Te laat geleverd','Niet tevreden','Anders'];
+const LATE_DAYS=14,DAY=864e5;
+const S={auth:null,all:[],items:[],status:'alle',open:null,mode:'echt',ro:false,fresh:{},mine:new Set()};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const d=x=>new Date(String(x).replace(' ','T'));
+const fmtD=x=>d(x).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
+const fmtDT=x=>d(x).toLocaleString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+// tellen op kalenderdagen: gisteren 23:00 aangemeld en nu 01:00 = 1 dag
+const dayStart=t=>{const x=new Date(t);return new Date(x.getFullYear(),x.getMonth(),x.getDate())};
+const calDays=t=>Math.round((dayStart(Date.now())-dayStart(t))/DAY);
+const ageDays=r=>calDays(d(r.aangemeld));
+const daysOpen=r=>ageDays(r);
+// echte kalenderweken (ma t/m zo): zondag aangemeld en maandag kijken = vorige week
+const weekStart=t=>{const x=dayStart(t);x.setDate(x.getDate()-(x.getDay()+6)%7);return x};
+const weeksBack=t=>Math.round((weekStart(Date.now())-weekStart(t))/(7*DAY));
+const weeksAgo=r=>weeksBack(d(r.aangemeld));
+const monthsAgo=r=>{const n=new Date(),x=d(r.aangemeld);return (n.getFullYear()-x.getFullYear())*12+n.getMonth()-x.getMonth()};
+function isoWeek(t){const x=dayStart(t);x.setDate(x.getDate()+3-(x.getDay()+6)%7);const y=new Date(x.getFullYear(),0,4);return 1+Math.round(((x-y)/DAY-3+(y.getDay()+6)%7)/7)}
+const fmtDM=t=>t.toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+function weekRange(i){const a=weekStart(Date.now());a.setDate(a.getDate()-7*i);const b=new Date(a);b.setDate(b.getDate()+6);return [a,b]}
+function weekName(i){const [a,b]=weekRange(i);return {naam:i===0?'Deze week':i===1?'Vorige week':'Week '+isoWeek(a),wk:isoWeek(a),van:fmtDM(a),tot:fmtDM(b)}}
+function inPeriod(r,per){if(!per)return true;const n=+per.slice(1);
+  if(per[0]==='w')return n<=1?weeksAgo(r)===n:weeksAgo(r)>=0&&weeksAgo(r)<n;
+  return n<=1?monthsAgo(r)===n:monthsAgo(r)>=0&&monthsAgo(r)<n}
+const dg=n=>n+(n===1?' dag':' dagen');
+// 0 dagen = vandaag, 1 dag = gisteren
+const openTxt=n=>n===0?'vandaag aangemeld':n===1?'gisteren aangemeld':n+' dagen open';
+const agoTxt=n=>n===0?'vandaag':n===1?'gisteren':n+' dagen geleden';
+const isLate=r=>OPEN(r.status)&&daysOpen(r)>LATE_DAYS;
+const notReceived=r=>r.status==='aangemeld'&&daysOpen(r)>LATE_DAYS;
+// Categorie raden uit de vrije tekst van de klant (alleen als er geen categorie handmatig is gekozen).
+// Volgorde telt: 'toch niet nodig' = Bedacht, 'niet nodig gehad' / 'niet gebruikt' = Te veel besteld,
+// 'verkeerd geleverd' = Verkeerd product, 'verkeerd besteld' = Verkeerd besteld.
+// 'Kleur wijkt af' = de geleverde kleur klopt niet; 'verkeerde kleur gekozen' = de klant koos zelf fout = Verkeerd besteld.
+function guessCat(t){t=String(t||'').toLowerCase();
+  // Verkeerd product = wij hebben iets anders gestuurd; Verkeerd besteld = de klant koos zelf het verkeerde
+  if(/(verkeerde?|foute?|andere?)\b.*\b(geleverd|gestuurd|verzonden|ontvangen|gekregen|levering|bezorgd)|niet (wat|het product dat) ik (heb )?besteld|klopt niet met (mijn )?bestelling|(gekozen|besteld) maar .*(ontvangen|gekregen|geleverd)/.test(t))return 'Verkeerd product';
+  if(/deuk|lek|kapot|beschadig|\blos\b|gebroken/.test(t))return 'Beschadigd';
+  if(/(kleur|tint)\w* (gekozen|geselecteerd|aangeklikt)|verkeerde? (kleur|tint)\w* besteld|per abuis|per ongeluk|kleurloo?s|op kleur hebben|maar (een )?(whitewash|kleur)/.test(t))return 'Verkeerd besteld';
+  if(/kleur|tint|donker|licht|staal/.test(t))return 'Kleur wijkt af';
+  if(/te laat|later dan|levertijd|niet op tijd|verzending|bezorging|levering/.test(t))return 'Te laat geleverd';
+  if(/verkeerd|fout|ander product|anders dan|\bipv\b|in plaats van|moeten (zijn|bestellen|hebben)|had .*moeten|gekozen|niet (het|de) juiste|past (er )?niet|te (klein|groot)|niet geschikt|alleen (te gebruiken )?voor|(het|iets) nodig voor|voor (binnen|buiten)\b|glans|\bmat\b|te kleine hoeveelheid|te weinig/.test(t))return 'Verkeerd besteld';
+  if(/bedacht|toch|gaat niet door|annul|niet meer nodig|gepland|uiteindelijk|plannen/.test(t))return 'Bedacht';
+  if(/te veel|teveel|\bover\b|overbodig|overgebleven|dubbel|genoeg|niet (nodig|gebruikt)|niet .*nodig|voorraad/.test(t))return 'Te veel besteld';
+  if(/tevreden|dekt|kwaliteit|bladder|plakt|hecht|trek\w* .*\baf\b|werkt niet|droogt niet|valt tegen|slecht/.test(t))return 'Niet tevreden';
+  return 'Anders'}
+const cat=r=>r.reden_cat||guessCat(r.reden);
+// Producten uit de chatbot: "2 x Naam (maat) — VW-artikelnummer", één regel per product. Telt het aantal stuks.
+function productLines(txt){const out=[];
+  for(const raw of String(txt||'').split(/\n|;/)){let l=raw.trim();if(!l)continue;
+    let q=1;const m=l.match(/^(\d+)\s*[x×]\s*/i);if(m){q=parseInt(m[1],10)||1;l=l.slice(m[0].length)}
+    else{const t=l.match(/\s*[x×]\s*(\d+)\s*$/i);if(t){q=parseInt(t[1],10)||1;l=l.slice(0,l.length-t[0].length)}}
+    const name=l.split(/\s+[—–-]\s+VW-/i)[0].replace(/\s*\([^)]*\)\s*$/,'').trim();
+    if(name)out.push([name,q])}
+  return out}
+function toast(t,act){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.setAttribute('role','status');e.textContent=t;
+  if(act){const b=document.createElement('button');b.type='button';b.className='toast-act';b.textContent=act.label;b.onclick=()=>{e.remove();act.fn()};e.append(b)}
+  document.body.append(e);setTimeout(()=>e.remove(),act?8000:2600)}
+// Kopiëren naar klembord (met terugval voor oudere browsers)
+async function copyText(v,what){v=String(v||'');if(!v)return;let ok=false;
+  try{await navigator.clipboard.writeText(v);ok=true}catch(_){try{const t=document.createElement('textarea');t.value=v;t.style.cssText='position:fixed;opacity:0';document.body.append(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}}
+  toast(ok?(what||v)+' gekopieerd':'Kopiëren lukte niet')}
+const copyBtn=(v,label,what)=>v?`<button type="button" class="copy" data-copy="${esc(v)}" data-what="${esc(what||v)}" title="Kopieer ${esc(what||v)}">⧉${label?' '+esc(label):''}</button>`:'';
+function block(title,text){$('app').innerHTML='<div class="blocked"><h2>'+esc(title)+'</h2><p>'+esc(text)+'</p><a href="../index.html">Naar het portaal</a></div>'}
+
+async function api(path,opt={}){
+  const r=await fetch(path,{...opt,headers:{'Content-Type':'application/json',Authorization:S.auth.token,...(opt.headers||{})},cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function portalAuth(){
+  const KEY='vp_auth';let a=null;try{a=JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){}
+  const toLogin=(x)=>{try{if(/^#retour\//.test(location.hash))sessionStorage.setItem('rt_open',location.hash)}catch(_){}if(x){try{localStorage.removeItem('vp_auth')}catch(_){}}location.href='../index.html#/login?'+(x?'verlopen=1&':'')+'terug='+encodeURIComponent('/retouren/')};
+  if(!a||!a.token){toLogin();return false}
+  try{const r=await fetch('/api/collections/users/auth-refresh',{method:'POST',headers:{Authorization:a.token},cache:'no-store'});
+    if(!r.ok){toLogin(r.status===401);return false}const j=await r.json();a={token:j.token,record:j.record};try{localStorage.setItem(KEY,JSON.stringify(a))}catch(_){}}
+  catch(_){block('Geen verbinding','De server is niet bereikbaar. Probeer het opnieuw.');return false}
+  S.auth=a;const rec=a.record;
+  $('userName').textContent=rec.name||rec.email;$('userAvatar').textContent=String(rec.name||rec.email||'?').trim().charAt(0).toUpperCase();
+  const lvl=rec.isHost?'edit':(rec.rt_access||'');S.hostFull=rec.isHost&&lvl==='edit';S.isTest=!!rec.is_test;
+  S.lvl=lvl;S.roles=Array.isArray(rec.rt_rollen)?rec.rt_rollen:[];
+  $('userRole').textContent=S.hostFull?'Host':S.isTest?'Testaccount':lvl==='edit'?'Alles gebruiken':lvl==='view'?'Alleen kijken':lvl==='rol'?(S.roles.map(x=>ROLNAAM[x]||x).join(', ')||'Geen rol gekozen'):'Geen toegang';
+  if(!lvl){block('Geen toegang','Je hebt (nog) geen toegang tot de Retouren-app. Vraag je beheerder om toegang.');return false}
+  if(lvl==='view'){S.ro=true;$('roBanner').hidden=false}
+  return true}
+/* Rollen (zelfde tabel als pb_hooks/rollen.js op de server). Wie een status mag zetten, mag die ook terugdraaien. */
+const ROLNAAM={klantenservice:'Klantenservice',magazijn:'Magazijn',financien:'Financiën'};
+const ROLSTATUS={klantenservice:['afgekeurd'],magazijn:['ontvangen','gecontroleerd','afgekeurd'],financien:['terugbetaald']};
+const ROLMAG={klantenservice:['cat','note','pdf','create'],magazijn:['cat','note'],financien:['note']};
+const full=()=>S.hostFull||S.lvl==='edit';
+function canDo(x){if(full())return true;if(S.lvl!=='rol')return false;return S.roles.some(r=>(ROLMAG[r]||[]).includes(x))}
+const STAP={aangemeld:0,ontvangen:1,gecontroleerd:2,afgekeurd:3,terugbetaald:3};
+function canStatus(to,from){if(full())return true;if(S.lvl!=='rol')return false;return S.roles.some(r=>{const l=ROLSTATUS[r]||[];return l.includes(from)||(l.includes(to)&&(STAP[to]||0)>(STAP[from]||0))})}
+async function load(){
+  let all=[],page=1;
+  for(;;){const j=await api('/api/collections/retouren/records?perPage=500&sort=-aangemeld&page='+page);all=all.concat(j.items);if(page>=j.totalPages)break;page++}
+  S.all=all;applyMode()}
+function applyMode(){if(S.isTest)S.mode='test';else if(!S.hostFull)S.mode='echt';S.items=S.all.filter(r=>!!r.demo===(S.mode==='test'));const t=S.mode==='test';
+  $('testBanner').hidden=!t;$('modeSwitch').setAttribute('aria-checked',String(t))}
+
+/* ---------- navigatie ---------- */
+function route(){const m=location.hash.match(/^#retour\/([\w-]+)/);const p=(location.hash==='#retouren'||m)?'retouren':'overzicht';
+  if(m&&S.loaded&&!(S.open&&S.open.id===m[1]))setTimeout(()=>openByKey(decodeURIComponent(m[1])),0);
+  $('page-overzicht').hidden=p!=='overzicht';$('page-retouren').hidden=p!=='retouren';
+  for(const [id,k] of [['nav-overzicht','overzicht'],['nav-retouren','retouren']]){if(p===k)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current')}
+  $('pageTitle').textContent=p==='overzicht'?'Retouren – overzicht':'Alle retouren'}
+window.addEventListener('hashchange',route);
+// Directe link: #retour/<id> (of een ordernummer). De host springt zo nodig naar echte/testgegevens.
+function openByKey(k){const find=list=>list.find(x=>x.id===k)||list.find(x=>String(x.ordernummer)===k);
+  let r=find(S.items);
+  if(!r&&S.hostFull){const o=find(S.all);if(o){S.mode=o.demo?'test':'echt';applyMode();render();r=o}}
+  if(!r){toast('Deze retour bestaat niet (meer) of je hebt er geen toegang toe');history.replaceState(null,'','#retouren');return}
+  openDetail(r.id,document.querySelector(`#rows tr[data-id="${r.id}"]`))}
+
+/* ---------- overzicht ---------- */
+function bars(el,entries){const max=Math.max(1,...entries.map(e=>e[1]));
+  el.innerHTML=entries.length?entries.map(([l,n])=>`<div class="bar" data-l="${esc(l)}"><span class="lbl" title="${esc(l)}">${esc(l)}</span><span class="track"><span class="fill" style="width:${Math.round(n/max*100)}%;display:block"></span></span><span class="n">${n}</span></div>`).join(''):'<p class="empty" style="padding:10px">Nog geen retouren.</p>'}
+function renderOverview(){
+  const now=Date.now(),it=S.items,since8=now-56*DAY;
+  const thisWeek=it.filter(r=>weeksAgo(r)===0).length,prevWeek=it.filter(r=>weeksAgo(r)===1).length;
+  const open=it.filter(r=>OPEN(r.status)),late=it.filter(isLate).sort((a,b)=>d(a.aangemeld)-d(b.aangemeld));
+  const done=it.filter(r=>r.status==='terugbetaald'&&Array.isArray(r.historie)).map(r=>{const h=r.historie.find(x=>x.status==='terugbetaald');return h?(d(h.at)-d(r.aangemeld))/DAY:null}).filter(x=>x!=null);
+  const avg=done.length?(done.reduce((a,b)=>a+b,0)/done.length):null;
+    $('stats').innerHTML=`
+    <div class="panel stat"><span>Deze week aangemeld</span><b>${thisWeek}</b><span>vorige week (wk ${weekName(1).wk}): ${prevWeek}</span></div>
+    <div class="panel stat"><span>Nog open</span><b>${open.length}</b><span>${open.filter(r=>r.status==='aangemeld').length} wachten op ontvangst</span></div>
+    <div class="panel stat ${late.length?'alert':''}"><span>Te lang open</span><b>${late.length}</b><span>langer dan ${LATE_DAYS} dagen</span></div>
+    <div class="panel stat"><span>Gem. afhandeltijd</span><b>${avg==null?'–':avg.toFixed(1).replace('.',',')+' d'}</b><span>van aanmelding tot terugbetaling</span></div>`;
+  // weken
+  const weeks=[];for(let i=7;i>=0;i--){const w=weekName(i);weeks.push({lbl:'wk '+w.wk,sub:i===0?'deze week':w.van,full:w.naam+' (wk '+w.wk+', '+w.van+' – '+w.tot+')',n:it.filter(r=>weeksAgo(r)===i).length})}
+  const W=560,H=190,pad=26,bw=(W-pad)/8,max=Math.max(1,...weeks.map(w=>w.n));
+  $('weekChart').innerHTML=`<svg viewBox="0 0 ${W} ${H+38}" width="100%" role="img" aria-label="Retouren per week: ${weeks.map(w=>w.full+': '+w.n).join(', ')}">
+    ${[0,.5,1].map(f=>`<line x1="${pad}" x2="${W}" y1="${H-f*(H-20)}" y2="${H-f*(H-20)}" stroke="#eef0f4"/><text x="0" y="${H-f*(H-20)+4}" font-size="11" fill="#98a0ac">${Math.round(f*max)}</text>`).join('')}
+    ${weeks.map((w,i)=>{const h=w.n/max*(H-20),x=pad+i*bw+bw*.18;return `<rect x="${x}" y="${H-h}" width="${bw*.64}" height="${h}" rx="5" fill="${i===7?'#e50071':'#f6a5c9'}"/><text x="${x+bw*.32}" y="${H-h-6}" font-size="12" font-weight="700" text-anchor="middle" fill="#202635">${w.n||''}</text><text x="${x+bw*.32}" y="${H+17}" font-size="11" font-weight="700" text-anchor="middle" fill="#697386">${w.lbl}</text><text x="${x+bw*.32}" y="${H+32}" font-size="10" text-anchor="middle" fill="#98a0ac">${w.sub}</text><title>${w.full}: ${w.n}</title>`}).join('')}</svg>`;
+  // te lang open
+  $('lateHint').textContent=late.length?'oudste eerst':'';
+  $('lateList').innerHTML=late.length?late.slice(0,6).map(r=>`<button type="button" data-id="${r.id}"><span><b>${esc(r.naam)}</b><br><small style="color:var(--muted)">#${esc(r.ordernummer)} · <span class="pill st-${r.status}">${SL[r.status]}</span></small></span><span class="late">${dg(daysOpen(r))}</span></button>`).join('')+(late.length>6?`<a class="btn" href="#retouren" style="margin-top:8px;align-self:flex-start">Alle ${late.length} bekijken</a>`:''):'<p style="color:var(--ok);font-weight:700;margin:0">Alles wordt op tijd afgehandeld.</p>';
+  // nog niet ontvangen (aangemeld en ouder dan 14 dagen)
+  const nr=it.filter(notReceived).sort((a,b)=>d(a.aangemeld)-d(b.aangemeld));
+  $('nrList').innerHTML=nr.length?`<table class="nr-table"><thead><tr><th>Aangemeld</th><th>Order</th><th>Klant</th><th class="hide-m">Contact</th><th>Wachten</th></tr></thead><tbody>${nr.map(r=>`<tr tabindex="0" data-id="${r.id}"><td>${fmtD(r.aangemeld)}</td><td><b>#${esc(r.ordernummer)}</b></td><td>${esc(r.naam)}<small>${esc(r.postcode_woonplaats)}</small></td><td class="hide-m">${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.telefoon?`<small>${esc(r.telefoon)}</small>`:''}</td><td class="late">${dg(daysOpen(r))}</td></tr>`).join('')}</tbody></table>${nr.length>0?`<button class="btn" type="button" id="nrAll" style="margin-top:10px">Alle ${nr.length} in de lijst bekijken</button>`:''}`:'<p style="color:var(--ok);font-weight:700;margin:0">Alle aangemelde retouren van langer dan '+LATE_DAYS+' dagen geleden zijn binnen.</p>';
+  $('nrCard').classList.toggle('nr-alert',nr.length>0);
+  // redenen + producten
+  const recent=it.filter(r=>{const w=weeksAgo(r);return w>=0&&w<8});
+  const rc={};recent.forEach(r=>{const c=cat(r);rc[c]=(rc[c]||0)+1});bars($('reasonBars'),Object.entries(rc).sort((a,b)=>b[1]-a[1]));$('reasonBars').querySelectorAll('.bar').forEach(b=>{b.tabIndex=0;b.setAttribute('role','button');b.title='Bekijk alle retouren met deze reden'});
+  const pc={};recent.forEach(r=>productLines(r.producten).forEach(([n,q])=>{pc[n]=(pc[n]||0)+q}));
+  bars($('productBars'),Object.entries(pc).sort((a,b)=>b[1]-a[1]).slice(0,6));
+  const n=late.length;$('navLate').hidden=!n;$('navLate').textContent=n;$('navLate').setAttribute('aria-label',n+' te lang open');
+}
+
+/* ---------- lijst ---------- */
+function filtered(){const q=$('q').value.trim().toLowerCase(),per=$('period').value,rd=$('reden').value;
+  return S.items.filter(r=>(S.status==='alle'||(S.status==='te-lang'?isLate(r):S.status==='niet-ontvangen'?notReceived(r):r.status===S.status))
+    &&inPeriod(r,per)&&(!rd||cat(r)===rd)
+    &&(!q||[r.ordernummer,r.ordernummer_cyane,r.naam,r.email,r.producten,r.postcode_woonplaats].join(' ').toLowerCase().includes(q)))}
+function renderChips(){const per=$('period').value,inP=S.items.filter(r=>inPeriod(r,per));
+  const rs=$('reden'),cur=rs.value,rc={};inP.forEach(r=>{const c=cat(r);rc[c]=(rc[c]||0)+1});
+  const names=[...CATS,...Object.keys(rc).filter(c=>!CATS.includes(c))];
+  rs.innerHTML='<option value="">Alle redenen</option>'+names.map(c=>`<option value="${esc(c)}">${esc(c)} (${rc[c]||0})</option>`).join('');rs.value=cur;
+  const base=inP.filter(r=>!rs.value||cat(r)===rs.value);
+  const opts=[['alle','Alle',base.length],...STATUS.map(([k,l])=>[k,l,base.filter(r=>r.status===k).length]),['te-lang','Te lang open',base.filter(isLate).length],['niet-ontvangen','Nog niet ontvangen (>'+LATE_DAYS+' d)',base.filter(notReceived).length]];
+  $('chips').innerHTML=opts.map(([k,l,n])=>`<button type="button" class="chip" data-st="${k}" aria-pressed="${S.status===k}">${l}<span class="c">${n}</span></button>`).join('')}
+function renderList(){renderChips();const list=filtered().sort((a,b)=>d(b.aangemeld)-d(a.aangemeld));S.order=list.map(r=>r.id);
+  $('empty').hidden=list.length>0;
+  const cnt={};list.forEach(r=>{const w=weeksAgo(r);cnt[w]=(cnt[w]||0)+1});let lastW=null;
+  const head=r=>{const w=weeksAgo(r);if(w===lastW)return '';lastW=w;if(w<0)return `<tr class="wk-head"><td colspan="6">Later gedateerd<b>${cnt[w]}</b></td></tr>`;const n=weekName(w);return `<tr class="wk-head"><td colspan="6">${n.naam}<span>wk ${n.wk} · ${n.van} – ${n.tot}</span><b>${cnt[w]}</b></td></tr>`};
+  $('rows').innerHTML=list.map(r=>head(r)+`<tr tabindex="0" data-id="${r.id}"${S.fresh[r.id]&&Date.now()-S.fresh[r.id]<4000?' class="fresh"':''}><td>${fmtD(r.aangemeld)}${OPEN(r.status)?`<small class="${isLate(r)?'late':''}">${openTxt(daysOpen(r))}</small>`:''}</td><td><b>#${esc(r.ordernummer)}</b>${copyBtn(r.ordernummer,'','Ordernummer '+r.ordernummer)}<small>${esc(r.ordernummer_cyane)}</small></td><td>${esc(r.naam)}<small>${esc(r.postcode_woonplaats)}</small></td><td class="hide-m prod">${esc(r.producten)}</td><td class="hide-m">${esc(cat(r))}</td><td><span class="pill st-${r.status}">${SL[r.status]}</span></td></tr>`).join('')}
+
+/* ---------- detail ---------- */
+function openDetail(id,from){const r=S.items.find(x=>x.id===id);if(!r)return;
+  const back=(S.open&&S.open.back)||(/^#retour\//.test(location.hash)?'#retouren':(location.hash||'#overzicht'));S.open={id,from,back};
+  if(location.hash!=='#retour/'+id)history.replaceState(null,'','#retour/'+id);
+  const ord=S.order||[],pos=ord.indexOf(id);
+  const hist=(Array.isArray(r.historie)?r.historie:[]).slice().reverse();
+  const host=!!S.hostFull;
+  const dr=$('drawer');
+  dr.innerHTML=`<div class="drawer-head"><div><h2 id="dTitle">Retour #${esc(r.ordernummer)}</h2><small style="color:var(--muted)">Aangemeld ${fmtDT(r.aangemeld)}${OPEN(r.status)?' · <span class="'+(isLate(r)?'late':'')+'">'+openTxt(daysOpen(r))+'</span>':''}</small>
+    <div class="dnav">${pos>=0?`<span class="pos" title="Gebruik ← en → voor de vorige/volgende retour">${pos+1} van ${ord.length} · ← →</span>`:''}<button type="button" id="dLink" title="Link naar deze retour kopiëren">🔗 Link kopiëren</button></div></div><button class="x" type="button" id="dClose" aria-label="Sluiten">×</button></div>
+  <div class="drawer-body">
+    <div><div class="section-title">Status</div><div class="steps" role="group" aria-label="Status wijzigen">${STATUS.map(([k,l])=>`<button type="button" data-set="${k}" ${canStatus(k,r.status)?'':'disabled'} aria-pressed="${r.status===k}" class="${r.status===k?'st-'+k:''}">${r.status===k?'✓ ':''}${l}</button>`).join('')}</div></div>
+    <div class="rf"><div class="rf-title">Retourformulier</div>
+      <div class="rf-row rf-nr"><span>Retournummer:</span><b>${esc(r.ordernummer||'–')}/${esc(r.ordernummer_cyane||'–')}${copyBtn(r.ordernummer,'Magento','Magento-nummer '+r.ordernummer)}${copyBtn(r.ordernummer_cyane,'Ceyenne','Ceyenne-nummer '+r.ordernummer_cyane)}</b></div>
+      <div class="rf-sub">Gegevens klant</div>
+      <div class="rf-row"><span>Naam:</span><b>${esc(r.naam)}</b></div>
+      <div class="rf-row"><span>Adres:</span><b>${esc(r.adres)}</b></div>
+      <div class="rf-row"><span>Postcode en Woonplaats:</span><b>${esc(r.postcode_woonplaats)}</b></div>
+      <div class="rf-row"><span>Telefoonnummer:</span><b>${r.telefoon?`<a href="tel:${esc(r.telefoon)}">${esc(r.telefoon)}</a>`:''}</b></div>
+      <div class="rf-row"><span>Email-adres:</span><b>${r.email?`<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}</b></div>
+      <div class="rf-sub">Retour bevat de volgende producten:</div>
+      <div class="rf-block">${esc(r.producten)||'–'}</div>
+      <div class="rf-row rf-reden"><span>Reden van retour:</span><b>${esc(r.reden)}</b></div>
+    </div>
+    <div><label class="section-title" for="dCat" style="display:block">Categorie (intern)</label><select id="dCat" ${canDo('cat')?'':'disabled'}>${CATS.map(c=>`<option ${cat(r)===c?'selected':''}>${c}</option>`).join('')}</select></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${r.pdf_url&&driveId(r.pdf_url)?'<button class="btn primary" type="button" id="dPdf">Retourformulier bekijken</button><button class="btn" type="button" id="dPdfDl">⤓ Downloaden</button>':`<button class="btn" type="button" disabled>${r.demo?'Geen PDF (testgegevens)':'Nog geen retourformulier'}</button>`}</div>${!r.demo&&canDo('pdf')?(r.pdf_url?`<div><label class="section-title" for="dMail" style="display:block">Retourformulier versturen</label><div class="mailrow"><span class="mailbox"><input id="dMail" type="email" value="${esc(r.email)}" placeholder="naam@voorbeeld.nl" autocomplete="off"><button type="button" class="clr" id="dMailClr" aria-label="E-mailadres wissen" title="Wissen">×</button></span><button class="btn primary" type="button" id="dMailSend">Versturen naar e-mail</button></div><span class="form-hint">Het e-mailadres van de klant staat er al. Wis het om naar een ander adres te sturen.</span></div>`:`<div><button class="btn primary" type="button" id="dPdfMake">Retourformulier maken</button><span class="form-hint" style="display:block;margin-top:6px">Maakt dezelfde PDF als via de chatbot (duurt ± 15 seconden).</span></div>`):''}
+    <div><label class="section-title" for="dNote" style="display:block">Notitie</label><textarea id="dNote" ${canDo('note')?'':'readonly'} placeholder="Bijv. ontvangen met 1 blik open, terugbetaling via Magento gedaan…">${esc(r.notitie)}</textarea><div style="display:flex;gap:10px;align-items:center;margin-top:8px">${canDo('note')?'<button class="btn" type="button" id="dSave">Notitie opslaan</button>':''}<span class="saved" id="dSaved" aria-live="polite"></span></div></div>
+    <div><div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:8px">Geschiedenis${host&&hist.length?'<button type="button" class="hist-del all" id="histAll">Alles wissen</button>':''}</div>${hist.length?'':'<p style="color:var(--muted);font-size:13px;margin:0">Geen geschiedenis.</p>'}<ol class="timeline">${hist.map((h,i)=>`<li><time>${fmtDT(h.at)}</time><span>${h.actie?`<span class="hist-actie">${esc(h.actie)}</span>`:`<span class="pill st-${esc(h.status)}">${SL[h.status]||esc(h.status)}</span>`} ${esc(h.door||'')}</span>${host?`<button type="button" class="hist-del" data-hi="${hist.length-1-i}" aria-label="Regel van ${fmtDT(h.at)} verwijderen">Verwijderen</button>`:''}</li>`).join('')}</ol></div>
+    <p class="keys">Sneltoetsen: <kbd>←</kbd> <kbd>→</kbd> vorige/volgende${STATUS.some(([k])=>canStatus(k,r.status))?' · <kbd>1</kbd>–<kbd>5</kbd> status':''} · <kbd>/</kbd> zoeken · <kbd>Esc</kbd> sluiten</p>
+    ${host?'<div class="danger-zone"><button type="button" class="btn danger" id="dDelete">Retour verwijderen</button><span class="form-hint">Alleen voor de host. Verwijderen kan niet ongedaan worden gemaakt.</span></div>':''}
+  </div>`;
+  dr.hidden=false;$('drawerBg').hidden=false;$('dClose').focus();
+  $('dClose').onclick=closeDetail;
+  $('dLink').onclick=()=>copyText(location.href.split('#')[0]+'#retour/'+r.id,'Link naar retour #'+(r.ordernummer||''));
+  dr.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>setStatus(r,b.dataset.set));
+  $('dCat').onchange=e=>save(r,{reden_cat:e.target.value},'Categorie opgeslagen');
+  dr.querySelectorAll('.hist-del').forEach(b=>b.onclick=()=>{
+    if(b.dataset.armed!=='1'){dr.querySelectorAll('.hist-del[data-armed="1"]').forEach(x=>{x.dataset.armed='';x.textContent=x.classList.contains('all')?'Alles wissen':'Verwijderen'});b.dataset.armed='1';b.textContent=b.classList.contains('all')?'Zeker? Klik nogmaals':'Zeker?';return}
+    const all=b.classList.contains('all'),cur=Array.isArray(r.historie)?r.historie:[];
+    const next=all?[]:cur.filter((_,i)=>i!==+b.dataset.hi);
+    save(r,{historie:next},all?'Geschiedenis gewist':'Regel verwijderd').then(ok=>{if(ok)openDetail(r.id,S.open&&S.open.from)})});
+  if($('dPdf'))$('dPdf').onclick=()=>openPdf(r);
+  // stond het retourformulier al open (bijv. bij ← →)? Dan meteen dat van deze retour tonen
+  if(S.pdfOpen&&S.pdfFor!==r.id){if(driveId(r.pdf_url))openPdf(r);else closePdf()}else if(S.pdfOpen&&$('dPdf'))$('dPdf').textContent='Retourformulier sluiten';
+  if($('dPdfMake'))$('dPdfMake').onclick=()=>makePdf(r,$('dPdfMake'));
+  if($('dMailClr'))$('dMailClr').onclick=()=>{$('dMail').value='';$('dMail').focus()};
+  if($('dMailSend'))$('dMailSend').onclick=()=>sendMail(r);
+  if($('dMail'))$('dMail').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();sendMail(r)}};if($('dPdfDl'))$('dPdfDl').onclick=()=>downloadPdf(r);
+  if($('dDelete'))$('dDelete').onclick=async()=>{const b=$('dDelete');
+    if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='Zeker weten? Klik nogmaals om te verwijderen';return}
+    b.disabled=true;
+    try{const res=await fetch('/api/collections/retouren/records/'+r.id,{method:'DELETE',headers:{Authorization:S.auth.token}});if(!res.ok)throw new Error(res.status);
+      S.all=S.all.filter(x=>x.id!==r.id);applyMode();closeDetail();render();toast('Retour #'+(r.ordernummer||'')+' verwijderd')}
+    catch(_){b.disabled=false;toast('Verwijderen mislukt – probeer het opnieuw')}};
+  if($('dSave'))$('dSave').onclick=()=>save(r,{notitie:$('dNote').value},'Notitie opgeslagen').then(ok=>{if(ok)$('dSaved').textContent='Opgeslagen'})}
+function driveId(u){u=String(u||'');const m=u.match(/[?&]id=([A-Za-z0-9_-]{10,})/)||u.match(/\/d\/([A-Za-z0-9_-]{10,})/);return m&&/^https:\/\/(drive|docs)\.google\.com\//.test(u)?m[1]:null}
+// Het formulier staat op Google Drive. De portaalserver haalt het op, zodat iedereen met toegang tot Retouren
+// het kan bekijken – ook zonder Google-account of met geblokkeerde cookies van derden.
+const pdfName=r=>'Retourformulier - '+String(r.ordernummer||r.id).replace(/[^\w.-]+/g,'_')+'.pdf';
+async function pdfBlob(r){if(S.pdfCache&&S.pdfCache.id===r.id)return S.pdfCache.url;
+  const res=await fetch('/api/retouren/'+encodeURIComponent(r.id)+'/pdf',{headers:{Authorization:S.auth.token},cache:'no-store'});
+  if(!res.ok){let m='';try{m=(await res.json()).message||''}catch(_){}throw new Error(m||('HTTP '+res.status))}
+  const b=await res.blob();if(S.pdfCache)URL.revokeObjectURL(S.pdfCache.url);
+  S.pdfCache={id:r.id,url:URL.createObjectURL(new Blob([b],{type:'application/pdf'}))};return S.pdfCache.url}
+function pdfFail(r,err){const m=$('pdfMsg'),id=driveId(r.pdf_url);$('pdfFrame').hidden=true;m.hidden=false;
+  m.innerHTML='<div><b>Het retourformulier kon niet worden opgehaald.</b><br><span></span>'+(id?'<br><br><a class="btn" target="_blank" rel="noopener" href="https://drive.google.com/file/d/'+encodeURIComponent(id)+'/view">Probeer via Google Drive</a>':'')+'</div>';
+  m.querySelector('span').textContent=err&&err.message?err.message:'Probeer het later opnieuw.'}
+async function openPdf(r){if(!driveId(r.pdf_url))return;if(S.pdfOpen&&S.pdfFor===r.id){closePdf();return}S.pdfFor=r.id;const v=$('pdfViewer'),seq=(S.pdfSeq=(S.pdfSeq||0)+1);
+  $('pdfTitle').textContent='Retourformulier #'+r.ordernummer;$('pdfFrame').hidden=false;$('pdfFrame').src='about:blank';
+  $('pdfMsg').hidden=false;$('pdfMsg').textContent='Retourformulier ophalen…';
+  for(const a of [$('pdfDownload'),$('pdfTab')]){a.removeAttribute('href');a.setAttribute('aria-disabled','true')}
+  v.hidden=false;S.pdfOpen=true;const b=$('dPdf');if(b)b.textContent='Retourformulier sluiten';if(!matchMedia('(min-width:1100px)').matches)$('pdfClose').focus();
+  try{const url=await pdfBlob(r);if(seq!==S.pdfSeq||!S.pdfOpen)return;
+    $('pdfMsg').hidden=true;$('pdfFrame').src=url;
+    $('pdfDownload').href=url;$('pdfDownload').download=pdfName(r);$('pdfTab').href=url;
+    for(const a of [$('pdfDownload'),$('pdfTab')])a.removeAttribute('aria-disabled')}
+  catch(err){if(seq===S.pdfSeq)pdfFail(r,err)}}
+async function downloadPdf(r){const b=$('dPdfDl');if(b){b.disabled=true;b.textContent='Ophalen…'}
+  try{const url=await pdfBlob(r);const a=document.createElement('a');a.href=url;a.download=pdfName(r);document.body.append(a);a.click();a.remove()}
+  catch(err){toast('Downloaden mislukt: '+(err.message||'probeer het opnieuw'))}
+  finally{if(b){b.disabled=false;b.textContent='⤓ Downloaden'}}}
+function closePdf(){$('pdfViewer').hidden=true;$('pdfFrame').src='about:blank';$('pdfMsg').hidden=true;S.pdfOpen=false;S.pdfFor=null;S.pdfSeq=(S.pdfSeq||0)+1;const b=$('dPdf');if(b){b.textContent='Retourformulier bekijken';b.focus()}}
+function stepDetail(dir){const o=S.order||[],i=o.indexOf(S.open&&S.open.id),j=i+dir;if(i<0||j<0||j>=o.length)return;
+  openDetail(o[j],document.querySelector(`#rows tr[data-id="${o[j]}"]`)||S.open.from)}
+function closeDetail(){if(S.pdfOpen)closePdf();const o=S.open;S.open=null;$('drawer').hidden=true;$('drawerBg').hidden=true;
+  if(o&&/^#retour\//.test(location.hash))history.replaceState(null,'',(!o.back||o.back==='#overzicht')?location.pathname:o.back);
+  if(o&&o.from&&document.contains(o.from))o.from.focus();else{const row=document.querySelector(`[data-id="${o&&o.id}"]`);if(row)row.focus()}}
+async function save(r,patch,msg){try{const upd=await api('/api/collections/retouren/records/'+r.id,{method:'PATCH',body:JSON.stringify(patch)});Object.assign(r,upd);render();toast(msg);return true}
+  catch(e){toast('Opslaan mislukt – probeer het opnieuw');return false}}
+async function setStatus(r,st,undo){if(r.status===st)return;const prev=r.status;
+  if(!(await save(r,{status:st},'Status: '+SL[st])))return;
+  if(S.open&&S.open.id===r.id)openDetail(r.id,S.open.from);
+  toast((undo?'Teruggezet naar ':'Status: ')+SL[st]+' (#'+(r.ordernummer||'')+')',undo?null:{label:'Ongedaan maken',fn:()=>setStatus(r,prev,true)})}
+
+async function post(path,body){const res=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:S.auth.token},body:JSON.stringify(body||{}),cache:'no-store'});
+  let j={};try{j=await res.json()}catch(_){}if(!res.ok||j.ok===false)throw new Error(j.message||('HTTP '+res.status));return j}
+async function makePdf(r,btn){if(btn){btn.disabled=true;btn.textContent='Retourformulier maken…'}
+  try{const j=await post('/api/retouren/'+encodeURIComponent(r.id)+'/pdf-maken');Object.assign(r,j.record);upsert(r);render();toast('Retourformulier gemaakt');openDetail(r.id,S.open&&S.open.from);return true}
+  catch(err){toast('Retourformulier maken mislukt: '+err.message);if(btn){btn.disabled=false;btn.textContent='Retourformulier maken'}return false}}
+async function sendMail(r){const inp=$('dMail'),btn=$('dMailSend'),to=inp.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)){toast('Vul een geldig e-mailadres in');inp.focus();return}
+  btn.disabled=true;btn.textContent='Versturen…';
+  try{const j=await post('/api/retouren/'+encodeURIComponent(r.id)+'/mail',{email:to});Object.assign(r,j.record);upsert(r);render();toast('Retourformulier verstuurd naar '+to);openDetail(r.id,S.open&&S.open.from)}
+  catch(err){toast('Versturen mislukt: '+err.message);btn.disabled=false;btn.textContent='Versturen naar e-mail'}}
+
+/* ---------- nieuwe retour ---------- */
+function openNew(from,keuze){S.open={id:null,from};const dr=$('drawer');const test=S.isTest||(S.hostFull&&(keuze!==undefined?keuze:S.mode==='test'));
+  dr.innerHTML=`<div class="drawer-head"><div><h2 id="dTitle">Nieuwe retour</h2><small style="color:var(--muted)">${S.isTest?'Testaccount: dit wordt altijd een testretour':test?'Testretour: alleen zichtbaar voor jou en het testaccount':'Komt meteen in de lijst voor iedereen met toegang'}</small>${S.hostFull?`<label class="new-test"><input type="checkbox" id="newTest"${test?' checked':''}> Testretour (verzonnen, alleen voor jou en het testaccount)</label>`:''}</div><button class="x" type="button" id="dClose" aria-label="Sluiten">×</button></div>
+  <form class="drawer-body" id="newForm" novalidate>
+    <div class="rf rf-form"><div class="rf-title">Retourformulier</div>
+      <div class="rf-nrin${test?'':' lk'}"><span class="rf-lbl">Retournummer:</span><input name="ordernummer" inputmode="numeric" autocomplete="off" aria-label="Ordernummer Magento" placeholder="Magento"><span aria-hidden="true">/</span><input name="ordernummer_cyane" autocomplete="off" aria-label="Ordernummer Cyane" placeholder="Cyane">${test?'':'<button class="btn primary" type="button" id="lkBtn">Ophalen</button>'}</div>
+      <div class="lk-msg" id="lkMsg" role="status"></div>
+      <div class="lk-items" id="lkItems" role="group" aria-label="Producten uit de bestelling"></div>
+      <div class="rf-sub">Vul onderstaande gegevens volledig in:</div>
+      <label class="rf-in"><span class="rf-lbl">Naam:</span><input name="naam" autocomplete="off" required></label>
+      <label class="rf-in"><span class="rf-lbl">Adres:</span><input name="adres" autocomplete="off"></label>
+      <label class="rf-in"><span class="rf-lbl">Postcode en Woonplaats:</span><input name="postcode_woonplaats" autocomplete="off"></label>
+      <label class="rf-in"><span class="rf-lbl">Telefoonnummer:</span><input name="telefoon" type="tel" autocomplete="off"></label>
+      <label class="rf-in"><span class="rf-lbl">Email-adres:</span><input name="email" type="email" autocomplete="off"></label>
+      <label class="rf-in rf-stack"><span class="rf-lbl">Retour bevat de volgende producten:</span><textarea name="producten" placeholder="2 x Productnaam (maat)&#10;1 x Ander product"></textarea><span class="form-hint">Eén product per regel, met het aantal ervoor: "2 x …". Na Ophalen vink je hierboven aan wat er retour gaat.</span></label>
+      <label class="rf-in rf-stack"><span class="rf-lbl">Reden van retour:</span><textarea name="reden" style="min-height:60px"></textarea></label>
+    </div>
+    <div class="form-grid">
+      <div class="section-title full" style="margin:0">Intern</div>
+      <label>Categorie<select name="reden_cat"><option value="">Automatisch bepalen</option>${CATS.map(c=>`<option>${c}</option>`).join('')}</select></label>
+      ${test?'<label>Link naar PDF (optioneel)<input name="pdf_url" type="url" placeholder="https://drive.google.com/…"><span class="form-hint">Alleen Google Drive-links</span></label>':'<label style="flex-direction:row;align-items:center;gap:8px;font-weight:600"><input type="checkbox" id="mkPdf" checked style="width:auto"> Retourformulier (PDF) maken</label>'}
+      <label class="full">Notitie<textarea name="notitie" style="min-height:60px"></textarea></label>
+    </div>
+    <div class="form-err" id="newErr" role="alert"></div>
+    <div style="display:flex;gap:10px"><button class="btn primary" type="submit" id="newSave">Retour opslaan</button><button class="btn" type="button" id="newCancel">Annuleren</button></div>
+  </form>`;
+  dr.hidden=false;$('drawerBg').hidden=false;dr.querySelector('[name=ordernummer]').focus();
+  $('dClose').onclick=closeDetail;$('newCancel').onclick=closeDetail;
+  if($('newTest'))$('newTest').onchange=e=>openNew(from,e.target.checked);
+  const F=n=>dr.querySelector('[name='+n+']');let LK=null;
+  const syncProd=()=>{if(!LK)return;const out=[];dr.querySelectorAll('.lk-item').forEach(row=>{const it=LK.items[+row.dataset.i],on=row.querySelector('input[type=checkbox]').checked,q=Math.max(1,Math.min(it.qty,parseInt(row.querySelector('input[type=number]').value,10)||1));row.classList.toggle('off',!on);if(on)out.push(q+' x '+it.label)});F('producten').value=out.join('\n')};
+  async function lookupOrder(){const nr=F('ordernummer').value.trim(),msg=$('lkMsg'),btn=$('lkBtn');
+    if(!nr){msg.className='lk-msg bad';msg.textContent='Vul eerst het Magento-ordernummer in.';F('ordernummer').focus();return}
+    btn.disabled=true;btn.textContent='Ophalen…';msg.className='lk-msg';msg.textContent='Order '+nr+' ophalen uit Magento…';$('lkItems').innerHTML='';
+    try{const res=await fetch('/api/retouren/order?nr='+encodeURIComponent(nr),{headers:{Authorization:S.auth.token},cache:'no-store'});let j={};try{j=await res.json()}catch(_){}
+      if(!res.ok||!j.ok)throw new Error(j.message||('HTTP '+res.status));LK=j;
+      F('ordernummer').value=j.ordernummer;if(j.ordernummer_cyane)F('ordernummer_cyane').value=j.ordernummer_cyane;
+      for(const k of ['naam','adres','postcode_woonplaats','telefoon','email'])if(j.klant[k])F(k).value=j.klant[k];
+      $('lkItems').innerHTML=j.items.map((it,i)=>`<label class="lk-item" data-i="${i}"><input type="checkbox" aria-label="${esc(it.label)} retour"><input type="number" min="1" max="${it.qty}" value="${it.qty}" aria-label="Aantal retour (max ${it.qty})"><span>${esc(it.label)}<small>besteld: ${it.qty}${it.kleurcode&&it.mengverf?' · kleurcode '+esc(it.kleurcode):''}</small></span></label>`).join('');
+      $('lkItems').querySelectorAll('input').forEach(x=>x.addEventListener(x.type==='checkbox'?'change':'input',syncProd));
+      F('producten').value='';
+      const parts=[];let cls='ok';
+      if(j.dagen!=null){if(j.binnen_termijn)parts.push(`Besteld ${agoTxt(j.dagen)} – binnen de retourtermijn van ${j.termijn} dagen.`);else{cls='warn';parts.push(`Let op: besteld ${agoTxt(j.dagen)} – buiten de retourtermijn van ${j.termijn} dagen. Je kunt de retour wel aanmaken.`)}}
+      if(j.eerdere_retouren&&j.eerdere_retouren.length){cls='warn';parts.push(`Er ${j.eerdere_retouren.length===1?'staat al 1 retour':'staan al '+j.eerdere_retouren.length+' retouren'} op deze order (laatste: ${fmtD(j.eerdere_retouren[0].aangemeld)}).`)}
+      if(j.wms_status==='unavailable')parts.push('Het WMS reageerde niet: controleer het Cyane-nummer.');
+      parts.push('Vink hieronder aan wat er retour gaat.');
+      msg.className='lk-msg '+cls;msg.textContent=parts.join(' ')}
+    catch(err){LK=null;msg.className='lk-msg bad';msg.textContent=err.message}
+    finally{btn.disabled=false;btn.textContent='Ophalen'}}
+  if($('lkBtn')){$('lkBtn').onclick=lookupOrder;F('ordernummer').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();lookupOrder()}})}
+  $('newForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),body={};for(const [k,v] of f.entries()){const t=String(v).trim();if(t)body[k]=t}
+    if(!body.naam&&!body.ordernummer){$('newErr').textContent='Vul minimaal de naam of het ordernummer in.';return}
+    if(body.pdf_url&&!/^https:\/\/(drive|docs)\.google\.com\//.test(body.pdf_url)){$('newErr').textContent='De PDF-link moet een Google Drive-link zijn.';return}
+    if(test&&S.hostFull)body.demo=true; // testaccount: de server maakt er zelf een testretour van
+    const btn=$('newSave');btn.disabled=true;$('newErr').textContent='';
+    const mk=!test&&$('mkPdf')&&$('mkPdf').checked&&!body.pdf_url;
+    if(mk){const mist=[['ordernummer','ordernummer'],['naam','naam'],['email','e-mailadres'],['producten','producten'],['reden','reden van retour']].filter(x=>!body[x[0]]).map(x=>x[1]);
+      if(mist.length){$('newErr').textContent='Voor het retourformulier ontbreekt nog: '+mist.join(', ')+'. Vul dit in of zet het vinkje "Retourformulier (PDF) maken" uit.';btn.disabled=false;return}}
+    try{const rec=await api('/api/collections/retouren/records',{method:'POST',body:JSON.stringify(body)});S.mine.add(rec.id);if(S.hostFull&&!!rec.demo!==(S.mode==='test')){S.mode=rec.demo?'test':'echt';try{localStorage.setItem('rt_mode',S.mode)}catch(_){}S.status='alle'}upsert(rec);render();toast('Retour opgeslagen');openDetail(rec.id,from);
+      if(mk){const b=$('dPdfMake');await makePdf(S.items.find(x=>x.id===rec.id)||rec,b);setTimeout(()=>{const m=$('dMail');if(m)m.focus()},50)}}
+    catch(err){$('newErr').textContent='Opslaan mislukt. Controleer de gegevens en probeer het opnieuw.'}finally{btn.disabled=false}};
+}
+
+/* ---------- live bijwerken (PocketBase realtime) ---------- */
+function upsert(rec){const i=S.all.findIndex(x=>x.id===rec.id);if(i>=0)Object.assign(S.all[i],rec);else{S.all.push(rec);S.all.sort((a,b)=>d(b.aangemeld)-d(a.aangemeld))}applyMode()}
+function setLive(on){$('liveDot').classList.toggle('on',on);$('liveText').textContent=on?'Live':'Opnieuw verbinden…'}
+function connectLive(){
+  let es;try{es=new EventSource('/api/realtime')}catch(_){setLive(false);return}
+  es.addEventListener('PB_CONNECT',async ev=>{try{const id=JSON.parse(ev.data).clientId;
+    const r=await fetch('/api/realtime',{method:'POST',headers:{'Content-Type':'application/json',Authorization:S.auth.token},body:JSON.stringify({clientId:id,subscriptions:['retouren']})});
+    setLive(r.ok);if(S.wasLive)await load(),render();S.wasLive=true}catch(_){setLive(false)}});
+  es.addEventListener('retouren',ev=>{let m;try{m=JSON.parse(ev.data)}catch(_){return}const rec=m.record;if(!rec)return;
+    if(m.action==='delete'){S.all=S.all.filter(x=>x.id!==rec.id);applyMode();render();return}
+    const isNew=!S.all.some(x=>x.id===rec.id);upsert(rec);
+    if(isNew&&!S.mine.has(rec.id)){S.fresh[rec.id]=Date.now();if(!!rec.demo===(S.mode==='test'))toast('Nieuwe retour binnengekomen'+(rec.ordernummer?': #'+rec.ordernummer:''))}
+    render();
+    if(S.open&&S.open.id===rec.id&&!isNew){const a=document.activeElement;if(!(a&&(a.id==='dNote'||a.id==='dCat')))openDetail(rec.id,S.open.from)}});
+  es.onerror=()=>setLive(false);
+}
+
+/* ---------- export ---------- */
+function exportCsv(){const list=filtered();const cols=[['Aangemeld',r=>fmtD(r.aangemeld)],['Ordernummer',r=>r.ordernummer],['Cyane',r=>r.ordernummer_cyane],['Naam',r=>r.naam],['Adres',r=>r.adres],['Postcode/plaats',r=>r.postcode_woonplaats],['Telefoon',r=>r.telefoon],['E-mail',r=>r.email],['Producten',r=>String(r.producten||'').replace(/\n/g,'; ')],['Reden',r=>r.reden],['Categorie',r=>cat(r)],['Status',r=>SL[r.status]],['Dagen open',r=>OPEN(r.status)?daysOpen(r):''],['Notitie',r=>r.notitie]];
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv='﻿'+cols.map(c=>q(c[0])).join(';')+'\n'+list.map(r=>cols.map(c=>q(c[1](r))).join(';')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='retouren-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(a);a.click();a.remove();toast(list.length+' retouren geëxporteerd')}
+
+function render(){renderOverview();renderList()}
+function wire(){
+  $('q').addEventListener('input',renderList);$('period').addEventListener('change',renderList);$('reden').addEventListener('change',renderList);
+  const toReden=b=>{if(!b)return;$('reden').innerHTML=`<option value="${esc(b.dataset.l)}"></option>`;$('reden').value=b.dataset.l;$('period').value='';S.status='alle';location.hash='#retouren';renderList()};
+  $('reasonBars').addEventListener('click',e=>toReden(e.target.closest('.bar[data-l]')));
+  $('reasonBars').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toReden(e.target.closest('.bar[data-l]'))}});$('exportBtn').addEventListener('click',exportCsv);
+  $('chips').addEventListener('click',e=>{const b=e.target.closest('[data-st]');if(!b)return;S.status=b.dataset.st;renderList()});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(!b)return;e.stopPropagation();copyText(b.dataset.copy,b.dataset.what)},true);
+  $('rows').addEventListener('click',e=>{if(e.target.closest('[data-copy]'))return;const tr=e.target.closest('tr[data-id]');if(tr)openDetail(tr.dataset.id,tr)});
+  $('rows').addEventListener('keydown',e=>{if(e.target.closest('[data-copy]'))return;if(e.key==='Enter'||e.key===' '){const tr=e.target.closest('tr[data-id]');if(tr){e.preventDefault();openDetail(tr.dataset.id,tr)}}});
+  $('lateList').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)openDetail(b.dataset.id,b)});
+  $('nrList').addEventListener('click',e=>{if(e.target.closest('a'))return;if(e.target.id==='nrAll'){S.status='niet-ontvangen';location.hash='#retouren';renderList();return}const tr=e.target.closest('tr[data-id]');if(tr)openDetail(tr.dataset.id,tr)});
+  $('nrList').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const tr=e.target.closest('tr[data-id]');if(tr){e.preventDefault();openDetail(tr.dataset.id,tr)}});
+  $('drawerBg').addEventListener('click',closeDetail);
+  $('newBtn').addEventListener('click',e=>{if(location.hash!=='#retouren')location.hash='#retouren';openNew(e.currentTarget)});
+  $('modeSwitch').addEventListener('click',()=>{S.mode=S.mode==='test'?'echt':'test';try{localStorage.setItem('rt_mode',S.mode)}catch(_){}S.status='alle';applyMode();render();toast(S.mode==='test'?'Testgegevens: verzonnen retouren':'Echte retouren')});
+  $('reseedBtn').addEventListener('click',async()=>{const b=$('reseedBtn');b.disabled=true;try{await api('/api/retouren/testdata',{method:'POST',body:'{}'});await load();render();toast('Testgegevens opnieuw gevuld')}catch(_){toast('Opnieuw vullen mislukt')}b.disabled=false});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){if(S.pdfOpen){closePdf();return}if(S.open)closeDetail();return}
+    const t=e.target,typing=t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable);
+    if(typing||e.ctrlKey||e.metaKey||e.altKey||(S.pdfOpen&&!matchMedia('(min-width:1100px)').matches)||!S.loaded||(S.open&&!S.open.id))return;
+    if(e.key==='/'){e.preventDefault();if(S.open)closeDetail();if(location.hash!=='#retouren')location.hash='#retouren';$('q').focus();$('q').select();return}
+    if(!S.open)return;
+    if(e.key==='ArrowLeft'){e.preventDefault();stepDetail(-1);return}
+    if(e.key==='ArrowRight'){e.preventDefault();stepDetail(1);return}
+    if(/^[1-5]$/.test(e.key)){const r=S.items.find(x=>x.id===S.open.id),to=STATUS[+e.key-1][0];if(r&&canStatus(to,r.status)){e.preventDefault();setStatus(r,to)}}});
+  $('pdfClose').addEventListener('click',closePdf);$('pdfViewer').addEventListener('click',e=>{if(e.target.id==='pdfViewer')closePdf()});
+}
+(async()=>{route();if(!(await portalAuth()))return;
+  try{await load()}catch(e){block('Laden mislukt','De retouren konden niet worden geladen. Ververs de pagina.');return}
+  if(S.isTest){$('reseedBtn').hidden=true;$('testBannerText').textContent='Testaccount: je ziet alleen verzonnen testretouren (dezelfde als de host in Testgegevens). Wat je hier aanmaakt, wordt een testretour.'}
+  if(S.hostFull){$('modeSwitch').hidden=false;try{if(localStorage.getItem('rt_mode')==='test')S.mode='test'}catch(_){}}
+  applyMode();wire();render();if(canDo('create'))$('newBtn').hidden=false;S.loaded=true;
+  try{const p=sessionStorage.getItem('rt_open');sessionStorage.removeItem('rt_open');if(p&&!location.hash)history.replaceState(null,'',p)}catch(_){}
+  route();connectLive()})();
+</script><script>/* Demo Portaal – gedeelde kop en licht/donker voor alle apps. build.py zet dit onderaan elke app.
+   - verplaatst logo, navigatie, knoppen en je naam uit de oude zijbalk naar de roze kop
+   - licht/donker volgt je keuze (opgeslagen bij je account, zelfde knop als op de startpagina)
+   - in donker worden lichte vlakken en donkere tekst in de app omgezet (ook wat later in beeld komt) */
+(function(){
+  var sb=document.querySelector('.app-sidebar'),tb=document.querySelector('.app-topbar');
+  if(!sb||!tb)return;
+  var root=document.documentElement,body=document.body;
+  body.classList.add('vp-shell');
+  /* ---------- kop opbouwen ---------- */
+  var brand=sb.querySelector('.brand'),sub=sb.querySelector('.brand-sub'),nav=sb.querySelector('nav'),foot=sb.querySelector('.sidebar-foot');
+  var titleBox=tb.firstElementChild,right=tb.querySelector('.topbar-right');
+  var h1=titleBox&&titleBox.querySelector('h1');
+  var row1=document.createElement('div');row1.className='vp-row1';
+  if(brand){var img=brand.querySelector('img');if(img){img.src='../logo-wit.png';img.removeAttribute('width');img.removeAttribute('height')}row1.appendChild(brand)}
+  var crumb=document.createElement('span');crumb.className='vp-crumb';crumb.textContent='/';
+  var naam=(document.title||'').split(/\s[-–]\s/)[0].trim()||(h1&&h1.textContent.trim())||'';
+  var isLab=!!(brand&&/#\/labs/.test(brand.getAttribute('href')||''));
+  var cb=document.createElement('b');cb.textContent=(isLab?'Labs / ':'')+naam;crumb.appendChild(cb);row1.appendChild(crumb);
+  var r=document.createElement('div');r.className='vp-right';
+  var tbtn=document.createElement('button');tbtn.type='button';tbtn.className='vp-themabtn';r.appendChild(tbtn);
+  if(right){var ver=right.querySelector('.version-label');while(right.firstChild){var c=right.firstChild;if(c===ver){right.removeChild(c);continue}r.appendChild(c)}right.remove();if(ver&&h1){var hr=document.createElement('div');hr.className='vp-h';h1.parentNode.insertBefore(hr,h1);hr.appendChild(h1);hr.appendChild(ver)}}
+  if(foot)r.appendChild(foot);
+  row1.appendChild(r);
+  tb.insertBefore(row1,tb.firstChild);
+  if(titleBox){titleBox.classList.add('vp-title');
+    /* losse uitleg-alinea bovenaan de inhoud hoort in de kop (anders staat grijze tekst op roze) */
+    var cont=document.querySelector('.app-content>main,.app-content>.wrap,.app-content>#app');
+    if(cont){var fc=cont.firstElementChild;while(fc&&(fc.hidden||fc.classList.contains('hidden')||getComputedStyle(fc).display==='none'))fc=fc.nextElementSibling;
+      if(fc&&fc.tagName==='P'){titleBox.appendChild(fc)}}}
+  if(nav){nav.classList.add('vp-tabs');if(!nav.querySelector('.tab')){nav.classList.add('fp');body.classList.add('vp-fp')}tb.appendChild(nav)}
+  /* FP maakt zijn eigen knop "Naar portaal" later aan in .topbar-right: die zit nu in de kop */
+  var fpRight=document.querySelector('.app-topbar .topbar-right');if(fpRight&&fpRight!==r)fpRight.classList.add('vp-right');
+
+  /* ---------- licht / donker ---------- */
+  var mq=matchMedia('(prefers-color-scheme: dark)');
+  function auth(){try{return JSON.parse(localStorage.getItem('vp_auth')||'null')}catch(_){return null}}
+  function pref(){var a=auth(),p=a&&a.record&&a.record.startpagina,t=p&&p.thema;return t==='licht'||t==='donker'?t:'auto'}
+  function dark(){var t=pref();return t==='donker'||(t==='auto'&&mq.matches)}
+  function label(){var t=pref();tbtn.innerHTML='<span class="vp-ti" aria-hidden="true">'+(t==='auto'?'◐':t==='donker'?'☾':'☀')+'</span><span class="vp-tt">'+(t==='auto'?'Automatisch':t==='donker'?'Donker':'Licht')+'</span>';
+    tbtn.title='Thema: '+(t==='auto'?'automatisch':t)+' – klik om te wisselen (automatisch → licht → donker)';tbtn.setAttribute('aria-label',tbtn.title)}
+  label();
+  tbtn.addEventListener('click',function(){var a=auth();if(!a||!a.record)return;
+    var p=a.record.startpagina&&typeof a.record.startpagina==='object'?a.record.startpagina:{};
+    var n={thema:{auto:'licht',licht:'donker',donker:'auto'}[pref()],volgorde:p.volgorde||[],verborgen:p.verborgen||[],grootte:p.grootte||{}};
+    a.record.startpagina=n;try{localStorage.setItem('vp_auth',JSON.stringify(a))}catch(_){}
+    var h={'Content-Type':'application/json'};if(a.token)h.Authorization=a.token;
+    fetch('/api/portaal/startpagina',{method:'POST',headers:h,body:JSON.stringify(n)}).catch(function(){}).then(function(){location.reload()})});
+  mq.addEventListener('change',function(){if(pref()==='auto'&&dark()!==root.classList.contains('vp-donker'))location.reload()});
+  if(!dark()){root.classList.remove('vp-donker');return}
+  root.classList.add('vp-donker');
+
+  function parse(s){var m=/rgba?\(([^)]+)\)/.exec(s||'');if(!m)return null;var p=m[1].split(/[\s,\/]+/).filter(Boolean).map(parseFloat);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1}}
+  function hsl(c){var r=c.r/255,g=c.g/255,b=c.b/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,s=0,h=0,d=mx-mn;
+    if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return {h:h,s:s,l:l}}
+  function css(h,s,l,a){return 'hsla('+Math.round(h)+','+Math.round(s*100)+'%,'+Math.round(l*100)+'%,'+(a==null?1:a)+')'}
+  var CARD='#1b1e2a',SUNK='#242838',LINE='#2b2f3f',INK='#eef0f5',SUB='#a2a9ba';
+  function set(el,p,v){el.style.setProperty(p,v,'important')}
+  function fix(el){
+    if(el.__vpd||el.closest('.app-topbar,#vpUpdate,#vpTestBar'))return;el.__vpd=1;
+    var t=el.tagName;if(t==='IMG'||t==='CANVAS'||t==='VIDEO'||t==='IFRAME'||t==='SCRIPT'||t==='STYLE'||t==='OPTION')return;
+    var cs=getComputedStyle(el),bg=parse(cs.backgroundColor),fg=parse(cs.color),k;
+    if(bg&&bg.a>.04){k=hsl(bg);
+      if(k.l>=.965&&k.s<.5)set(el,'background-color',CARD);
+      else if(k.l>=.86&&k.s<.3)set(el,'background-color',SUNK);
+      else if(k.l>=.78)set(el,'background-color',css(k.h,Math.min(1,k.s),.5,.17));}
+    if(fg){k=hsl(fg);
+      if(k.l<.62&&k.s<.3)set(el,'color',k.l<.36?INK:SUB);
+      else if(k.l<.5)set(el,'color',css(k.h,Math.min(1,k.s),.76));}
+    ['Top','Right','Bottom','Left'].forEach(function(sd){if(parseFloat(cs['border'+sd+'Width'])>0){var bc=parse(cs['border'+sd+'Color']);if(bc&&bc.a>.04){var q=hsl(bc);if(q.l>.72&&q.s<.5)set(el,'border-'+sd.toLowerCase()+'-color',LINE);else if(q.l>.72)set(el,'border-'+sd.toLowerCase()+'-color',css(q.h,q.s,.35))}}});
+    if(el instanceof SVGElement){var f=parse(cs.fill),st=parse(cs.stroke);
+      if(f&&f.a>.04){k=hsl(f);if(k.s<.3&&k.l<.6)set(el,'fill',k.l<.36?INK:SUB);else if(k.s<.3&&k.l>.85)set(el,'fill',LINE)}
+      if(st&&st.a>.04){k=hsl(st);if(k.s<.3&&k.l>.75)set(el,'stroke',LINE);else if(k.s<.3&&k.l<.4)set(el,'stroke',INK)}}
+  }
+  function sweep(n){if(n.nodeType!==1)return;fix(n);var all=n.getElementsByTagName('*');for(var i=0;i<all.length;i++)fix(all[i])}
+  sweep(body);
+  var q=[],busy=false;
+  new MutationObserver(function(ms){for(var i=0;i<ms.length;i++){var m=ms[i];if(m.type==='childList'){for(var j=0;j<m.addedNodes.length;j++)q.push(m.addedNodes[j])}else{var e=m.target;if(e.__vpd&&!e.closest('.app-topbar')){e.__vpd=0;e.style.removeProperty('background-color');e.style.removeProperty('color');q.push(e)}}}
+    if(!busy){busy=true;requestAnimationFrame(function(){busy=false;var w=q.splice(0);for(var k=0;k<w.length;k++)if(w[k].isConnected)sweep(w[k])})}})
+    .observe(body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+})();
+</script><script>(function(){var f=document.querySelector('.sidebar-foot');if(!f)return;
+var has=false;try{has=!!localStorage.getItem('vp_auth')}catch(_){}if(!has)return;
+var st=document.createElement('style');st.textContent='.sidebar-foot.vp-logout{cursor:pointer;transition:background .15s}'+
+'.sidebar-foot.vp-logout:hover,.sidebar-foot.vp-logout:focus-visible{background:#fdf0f6;outline:none}'+
+'.vp-lo-hint{margin-left:auto;font-size:11px;font-weight:700;color:#e50071;opacity:0;transition:opacity .15s;white-space:nowrap}'+
+'.sidebar-foot.vp-logout:hover .vp-lo-hint,.sidebar-foot.vp-logout:focus-visible .vp-lo-hint{opacity:1}'+
+'#vpLogoutDlg{position:fixed;inset:0;z-index:4000;background:#20263566;display:grid;place-items:center;padding:16px;font:14px/1.5 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif}'+
+'#vpLogoutDlg .box{background:#fff;color:#202635;border-radius:14px;box-shadow:0 20px 60px #0004;padding:22px 22px 18px;width:100%;max-width:360px}'+
+'#vpLogoutDlg h2{margin:0 0 6px;font-size:18px}#vpLogoutDlg p{margin:0 0 18px;color:#5b6270}'+
+'#vpLogoutDlg .row{display:flex;gap:10px;justify-content:flex-end}'+
+'#vpLogoutDlg button{border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:700;cursor:pointer}'+
+'#vpLogoutDlg .no{background:#eef0f4;color:#202635}#vpLogoutDlg .yes{background:#e50071;color:#fff}'+
+'#vpLogoutDlg .pw{margin-right:auto;align-self:center;color:#b90059;font-weight:700;font-size:13px;text-decoration:none}#vpLogoutDlg .pw:hover{text-decoration:underline}';
+document.head.appendChild(st);
+f.classList.add('vp-logout');f.setAttribute('role','button');f.tabIndex=0;f.title='Uitloggen';f.setAttribute('aria-label','Uitloggen');
+var h=document.createElement('span');h.className='vp-lo-hint';h.textContent='Uitloggen';f.appendChild(h);
+function close(){var d=document.getElementById('vpLogoutDlg');if(d)d.remove();f.focus()}
+function out(){try{localStorage.removeItem('vp_auth')}catch(_){}location.href='../index.html#/login'}
+function ask(){if(document.getElementById('vpLogoutDlg'))return;
+  var d=document.createElement('div');d.id='vpLogoutDlg';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','vpLogoutTitle');
+  var busy=window.__vpBusy&&window.__vpBusy();
+  d.innerHTML='<div class="box"><h2 id="vpLogoutTitle">Uitloggen?</h2><p></p><div class="row"><a class="pw" href="../index.html#/wachtwoord">Wachtwoord wijzigen</a><button type="button" class="no">Annuleren</button><button type="button" class="yes">Uitloggen</button></div></div>';
+  d.querySelector('p').textContent=busy?'Je wijzigingen worden nog opgeslagen. Wacht even en probeer het dan opnieuw.':'Weet je zeker dat je wilt uitloggen?';
+  if(busy)d.querySelector('.yes').remove();
+  d.querySelector('.no').onclick=close;var y=d.querySelector('.yes');if(y)y.onclick=out;
+  d.addEventListener('click',function(e){if(e.target===d)close()});
+  d.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+  document.body.appendChild(d);d.querySelector('.no').focus()}
+f.addEventListener('click',ask);f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();ask()}});
+})();</script><script>(function(){var APP='retouren',NAME='de retouren-app',BUILD='2713d86e60';
+function check(){fetch('/versie.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var a=j.apps&&j.apps[APP];if(!a||a.build===BUILD||document.getElementById('vpUpdate'))return;
+var d=document.createElement('div');d.id='vpUpdate';d.setAttribute('role','status');
+d.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:3000;background:#202635;color:#fff;padding:12px 14px 12px 18px;border-radius:12px;box-shadow:0 10px 40px #0004;font:600 13px/1.4 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif;display:flex;gap:14px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)';
+var t=document.createElement('span');t.textContent='Er staat een nieuwe versie van '+NAME+' online (versie '+a.versie+').';
+var b=document.createElement('button');b.type='button';b.textContent='Nu bijwerken';b.style.cssText='border:0;border-radius:8px;padding:8px 12px;background:#e50071;color:#fff;font:inherit;cursor:pointer';b.onclick=function(){location.reload()};
+d.appendChild(t);d.appendChild(b);document.body.appendChild(d)}).catch(function(){})}
+check();setInterval(check,300000);document.addEventListener('visibilitychange',function(){if(!document.hidden)check()})})();</script></body></html>

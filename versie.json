@@ -1,0 +1,20 @@
+{
+ "gebouwd": "2026-11-06 08:07",
+ "apps": {
+  "portaal": {
+   "versie": "3.5",
+   "build": "9518c0fe25",
+   "nieuw": "Melding over niet-ontvangen retouren weg van de startpagina"
+  },
+  "functioneringsportaal": {
+   "versie": "2.6",
+   "build": "e8455c5b83",
+   "nieuw": "Logo op het toegangscode- en inlogscherm klopt weer (ook in donker)"
+  },
+  "retouren": {
+   "versie": "3.4",
+   "build": "2713d86e60",
+   "nieuw": "Nieuwe stijl met roze kop en tabs; licht en donker"
+  }
+ }
+}

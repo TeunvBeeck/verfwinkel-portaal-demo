@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Testaccount openen…</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f7fa;color:#202635;font:15px/1.5 Inter,ui-sans-serif,-apple-system,"Segoe UI",Arial,sans-serif}p{background:#fff;border:1px solid #e3e6ec;border-radius:12px;padding:20px 24px;max-width:420px;text-align:center}</style>
+</head><body><p id="m">Testaccount Johnny Test openen…</p>
+<script>
+// Opent het portaal als "Johnny Test" in alleen dit tabblad. De sessie komt via postMessage van het host-tabblad
+// (nooit via de URL) en wordt in sessionStorage gezet; de host blijft in zijn eigen tabbladen ingelogd.
+(function(){
+  var m=document.getElementById('m');function fail(t){m.textContent=t}
+  if(!window.opener){fail('Open het testaccount via Accounts & toegang in het portaal.');return}
+  var to=setTimeout(function(){fail('Het openen duurde te lang. Sluit dit tabblad en probeer het opnieuw.')},20000);
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin||e.source!==window.opener||!e.data||e.data.type!=='vp-test-auth')return;
+    if(e.data.error){clearTimeout(to);fail(e.data.error);return}
+    var a=e.data.auth;if(!a||!a.token){return}
+    clearTimeout(to);
+    try{sessionStorage.setItem('vp_tab_auth','1');sessionStorage.setItem('vp_auth',JSON.stringify(a))}catch(_){fail('Dit tabblad kan geen sessie bewaren.');return}
+    try{window.opener=null}catch(_){}
+    location.replace('index.html#/');
+  });
+  window.opener.postMessage({type:'vp-test-ready'},location.origin);
+})();
+</script></body></html>
